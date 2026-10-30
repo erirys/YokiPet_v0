@@ -1,4 +1,3 @@
-# Especificación del producto — YokiPet
 
 **Versión:** 0.1 — prototipo académico / demostración, no marketplace listo para operar.  
 **Idioma inicial:** español. **Mercado de referencia:** Costa Rica (ubicaciones ficticias).  
@@ -109,3 +108,5 @@ explica las coincidencias observables. Si no hay candidatos, dilo claramente.
 ## 9. Despliegue
 
 - **Ruta:** A — Streamlit Community Cloud para demostración con datos ficticios.
+
+print(especificacion)

@@ -1,3 +1,4 @@
+
 # AGENTS.md — YokiPet
 
 > Instrucciones para agentes de programación (Codex, Cursor, Copilot, Gemini CLI y otros). Leer `especificacion.md` **antes** de modificar el código. En caso de conflicto, pedir aclaración en lugar de inventar requisitos.
