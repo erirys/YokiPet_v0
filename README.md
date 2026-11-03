@@ -1,6 +1,7 @@
 # YokiPet
 
-**Enlace a la app:** [https://yokipet.streamlit.app](https://yokipet.streamlit.app)  
+**Enlace a la app:**  https://yokipetv0-9julrgueqpfvukxcfkxmy3.streamlit.app/ 
+**Repositorio Github:** https://github.com/erirys/YokiPet_v0
 **Autor/a:** Ericka Reyes
 
 ## Pitch
