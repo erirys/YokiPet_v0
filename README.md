@@ -41,11 +41,3 @@ El usuario realiza los siguientes pasos en la aplicación:
 | Evaluador / Usuario | Búsqueda sin API Key cargada | El programa cargó sin problemas, omitiendo las explicaciones generativas pero arrojando los cuidadores correctos. | Se añadió un banner de advertencia claro indicando que la IA explicativa está inactiva pero el filtrado es funcional. |
 | Evaluador / Usuario | Solicitud de Reserva | Se envió la reserva y se reflejó en el panel del cuidador instantáneamente. | Se ajustó la consistencia de fechas con el formato de Costa Rica (DD/MM/AAAA). |
 
-## Ejecutar en local (opcional)
-
-```bash
-pip install -r requirements.txt
-# Ruta A: poned la clave en .streamlit/secrets.toml y ejecutad
-streamlit run app.py
-# Ruta B: exportad la clave y ejecutad
-export GEMINI_API_KEY="tu_clave_aqui" && streamlit run app.py
