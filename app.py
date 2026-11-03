@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import os
 
-# Configuración de la página con tema de color alegre
-st.set_page_config(page_title="YokiPet", page_icon="🐾", layout="centered")
+# -----------------------------------------------------
+# 1. CONFIGURACIÓN DE PÁGINA Y ESTILOS VISUALES
+# -----------------------------------------------------
+st.set_page_config(page_title="YokiPet - Cuidado de Mascotas", page_icon="🐾", layout="centered")
 
-# Aplicar CSS personalizado para mejorar el diseño plano y añadir fuentes del slogan
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
 
-    /* Color de fondo global sutil y fuentes */
     .main {
         background-color: #fcf9f5;
         font-family: 'Quicksand', sans-serif;
     }
     
-    /* Estilo de tarjetas de solicitudes */
     .card {
         background-color: #ffffff;
         padding: 20px;
@@ -26,7 +26,6 @@ st.markdown("""
         margin-bottom: 20px;
     }
     
-    /* Título llamativo con degradado */
     .main-title {
         font-family: 'Fredoka', sans-serif;
         background: linear-gradient(45deg, #ff7e5f, #feb47b);
@@ -38,7 +37,6 @@ st.markdown("""
         margin-bottom: 5px;
     }
     
-    /* Slogan creativo con fuente divertida pero profesional */
     .creative-slogan {
         font-family: 'Fredoka', sans-serif;
         color: #4a4a4a;
@@ -52,13 +50,12 @@ st.markdown("""
         width: 100%;
         box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
     }
+    
     .slogan-highlight {
         color: #ff7e5f;
         font-weight: 700;
-        font-size: 1.6rem;
     }
     
-    /* Aviso del Prototipo destacado */
     .aviso-prototipo {
         background-color: #fff3cd;
         color: #856404;
@@ -72,7 +69,51 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Inicializar el estado de la sesión para simular una base de datos temporal
+# Banner de advertencia obligatorio según especificación.md
+st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. No se realizan reservas reales.</div>', unsafe_allow_html=True)
+
+st.markdown('<h1 class="main-title">🐾 YokiPet</h1>', unsafe_allow_html=True)
+st.markdown('<div class="creative-slogan">La red de confianza para el cuidado de tus <span class="slogan-highlight">mascotas</span> en Costa Rica</div>', unsafe_allow_html=True)
+
+# -----------------------------------------------------
+# 2. CONFIGURACIÓN DE SECRETOS Y PIEZA DE IA (GEMINI)
+# -----------------------------------------------------
+# Obtener clave de la API de forma segura (Advanced Settings / Variable de Entorno)
+gemini_key = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", None))
+usar_ia = False
+client = None
+
+if gemini_key:
+    try:
+        from google import genai
+        client = genai.Client(api_key=gemini_key)
+        usar_ia = True
+    except Exception as e:
+        st.warning("⚠️ El módulo de IA explicativa no se pudo inicializar. Se utilizará el modo determinista estándar.")
+else:
+    st.info("💡 Modo sin IA activo. La búsqueda determinista y simulación de reservas están 100% operativas.")
+
+def obtener_explicacion_asistente(cuidadores_encontrados, mascota_info):
+    if not usar_ia or not client:
+        return "*Modo sin IA activo. El catálogo determinista te asegura la mejor coincidencia según los filtros ingresados.*"
+    
+    prompt = f"""Actúa como un asistente experto de YokiPet en Costa Rica.
+    Analiza los siguientes cuidadores que cumplen con los filtros aplicados: {cuidadores_encontrados}.
+    Explica brevemente y con un tono cálido al propietario de la mascota ({mascota_info}) por qué estas opciones son óptimas.
+    No inventes tarifas, zonas, nombres ni valoraciones que no estén explícitas en los datos proporcionados."""
+    
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        return response.text
+    except Exception as api_err:
+        return "⚠️ La IA explicativa no está disponible temporalmente por límites de cuota o de red. No obstante, los resultados deterministas listados abajo son completamente válidos y seguros."
+
+# -----------------------------------------------------
+# 3. BASE DE DATOS FICTICIA INICIAL EN SESIÓN
+# -----------------------------------------------------
 if "solicitudes" not in st.session_state:
     st.session_state.solicitudes = [
         {
@@ -80,70 +121,45 @@ if "solicitudes" not in st.session_state:
             "mascota": "Toby",
             "raza": "Perro, Golden Retriever",
             "fechas": "15/06/2025 al 20/06/2025",
-            "detalles": "Necesita paseos dos veces al día. Muy amigable y juguetón."
+            "detalles": "Necesita paseos dos veces al día. Muy amigable."
         },
         {
             "propietario": "Carlos Gómez",
             "mascota": "Michi",
             "raza": "Gato, Siamés",
             "fechas": "01/07/2025 al 05/07/2025",
-            "detalles": "Solo requiere alimentación y limpieza de arenero una vez al día por la mañana."
+            "detalles": "Solo requiere alimentación y limpieza de arenero una vez al día."
         }
     ]
 
-# Barra lateral interactiva y atractiva
-with st.sidebar:
-    st.markdown("<h2 style='text-align: center; font-family: Fredoka;'>🧡 YokiPet Club</h2>", unsafe_allow_html=True)
-    st.write("¡Bienvenido a la comunidad más alegre de amantes de las mascotas!")
-    st.image("https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400", use_container_width=True)
-    
-    st.markdown("---")
-    st.markdown("**📌 Estado del Sistema:**")
-    st.info("Servidores en línea • Versión 0.1 Demo")
-    
-    st.markdown("<div class='aviso-prototipo'>⚠ Prototipo con datos ficticios. No se realizan reservas reales.</div>", unsafe_allow_html=True)
+# Catálogo de Cuidadores de prueba
+cuidadores_db = [
+    {"nombre": "Lucía Madrigal", "servicio": "Hospedaje", "zona": "San José", "tarifa": 12000, "especie": "Perro", "tamaño": "Todos"},
+    {"nombre": "Andrés Fonseca", "servicio": "Paseos", "zona": "Heredia", "tarifa": 5000, "especie": "Perro", "tamaño": "Mediano"},
+    {"nombre": "Valeria Chaves", "servicio": "Guardería", "zona": "Alajuela", "tarifa": 8000, "especie": "Gato", "tamaño": "Todos"}
+]
 
-# Banner de Bienvenida Principal
-st.markdown("<h1 class='main-title'>YokiPet 🐾</h1>", unsafe_allow_html=True)
-# Ubicación creativa del nuevo slogan solicitado
-st.markdown("<div class='creative-slogan'>¿Quién cuidará de tus peluditos? ——— <span class='slogan-highlight'>¡Yoki!</span></div>", unsafe_allow_html=True)
-
-# Métricas alegres e informativas en la parte superior
-col_m1, col_m2, col_m3 = st.columns(3)
-with col_m1:
-    st.metric(label="Mascotas felices", value=len(st.session_state.solicitudes), delta="+1 esta semana")
-with col_m2:
-    st.metric(label="Cuidadores verificados", value="24 Active", delta="100% confiable")
-with col_m3:
-    st.metric(label="Puntuación media", value="4.9 ★", delta="Impecable")
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# Pestañas de navegación estilizadas con iconos claros
-tab1, tab2 = st.tabs(["🙋‍♂️ Dueños de Mascotas", "🏡 Cuidadores Disponibles"])
+# -----------------------------------------------------
+# 4. INTERFAZ Y PESTAÑAS
+# -----------------------------------------------------
+tab1, tab2, tab3 = st.tabs(["🙋‍♂️ Dueños", "🏡 Cuidadores", "🔎 Buscar Cuidador con IA"])
 
 with tab1:
-    st.markdown("### ✨ Publica la solicitud para tu consentido")
-    st.write("¡Cuéntanos qué necesita tu mascota y los mejores cuidadores se postularán!")
+    st.header("Publicar Solicitud de Cuidado")
+    st.write("Completa el formulario para que un cuidador se postule de manera simulada.")
     
-    # Formulario dentro de un contenedor visual
     with st.form("solicitud_form", clear_on_submit=True):
-        st.markdown("#### 📝 Formulario de Solicitud")
         nombre_dueño = st.text_input("Tu Nombre completo")
+        nombre_mascota = st.text_input("Nombre de tu mascota")
+        raza_mascota = st.text_input("Especie / Raza (ej: Gato Siamés, Perro Poodle)")
         
-        col_f1, col_f2 = st.columns(2)
-        with col_f1:
-            nombre_mascota = st.text_input("Nombre de tu mascota")
-        with col_f2:
-            raza_mascota = st.text_input("Raza y tipo (Ej: Husky, Gato persa)")
+        col1, col2 = st.columns(2)
+        with col1:
+            fecha_inicio = st.date_input("Desde", min_value=datetime.today())
+        with col2:
+            fecha_fin = st.date_input("Hasta", min_value=datetime.today())
             
-        col_d1, col_d2 = st.columns(2)
-        with col_d1:
-            fecha_inicio = st.date_input("¿Desde cuándo?", min_value=datetime.today())
-        with col_d2:
-            fecha_fin = st.date_input("¿Hasta cuándo?", min_value=datetime.today())
-            
-        detalles = st.text_area("📝 Indicaciones, personalidad o cuidados especiales de tu mascota")
+        detalles = st.text_area("Indicaciones o cuidados especiales")
         
         submit_button = st.form_submit_button("🚀 Publicar Anuncio de Cuidado")
         
@@ -157,20 +173,17 @@ with tab1:
                     "detalles": detalles
                 }
                 st.session_state.solicitudes.append(nueva_solicitud)
-                st.balloons() # Animación festiva de globos al publicar con éxito
+                st.balloons()
                 st.success(f"¡Genial! El anuncio de {nombre_mascota} ya está disponible en la pestaña de cuidadores.")
             else:
                 st.error("❌ Por favor, ingresa al menos tu nombre y el de tu mascota para poder ayudarte.")
 
 with tab2:
     st.markdown("### 🔎 Solicitudes de Cuidado Activas")
-    st.write("Aquí verás los anuncios publicados por dueños de mascotas que buscan tu cariño y atención:")
-    
     if len(st.session_state.solicitudes) == 0:
-        st.info("🌈 No hay anuncios pendientes en este momento. ¡Vuelve más tarde!")
+        st.info("🌈 No hay anuncios pendientes en este momento.")
     else:
         for idx, sol in enumerate(st.session_state.solicitudes):
-            # Crear contenedor con tarjeta visual
             st.markdown(f"""
             <div class='card'>
                 <h3 style='margin-top:0; color:#ff7e5f; font-family: Fredoka;'>🐶 {sol['mascota']} ({sol['raza']})</h3>
@@ -180,7 +193,46 @@ with tab2:
             </div>
             """, unsafe_allow_html=True)
             
-            # Botón interactivo debajo de la tarjeta
             if st.button(f"🤝 Postularme para cuidar a {sol['mascota']}", key=f"btn_{idx}"):
-                st.success(f"🎉 ¡Increíble! Te has postulado para cuidar a {sol['mascota']}. Hemos enviado un aviso ficticio a {sol['propietario']}.")
+                st.success(f"🎉 ¡Increíble! Te has postulado para cuidar a {sol['mascota']}. Se ha enviado una respuesta de simulación.")
+
+with tab3:
+    st.header("Buscador Inteligente de Cuidadores")
+    st.write("Filtra deterministamente nuestro catálogo y deja que el asistente te guíe.")
+    
+    b_servicio = st.selectbox("Servicio requerido", ["Hospedaje", "Guardería", "Paseos"])
+    b_zona = st.selectbox("Ubicación en Costa Rica", ["San José", "Heredia", "Alajuela"])
+    b_especie = st.selectbox("Especie de mascota", ["Perro", "Gato"])
+    b_presupuesto = st.number_input("Presupuesto máximo (₡)", min_value=1000, value=15000, step=1000)
+    
+    if st.button("Buscar Cuidador ideal"):
+        # Filtrado determinista e inalterable
+        encontrados = [
+            c for c in cuidadores_db 
+            if c['servicio'] == b_servicio 
+            and c['zona'] == b_zona 
+            and c['especie'] == b_especie
+            and c['tarifa'] <= b_presupuesto
+        ]
+        
+        if encontrados:
+            st.success(f"Se encontraron {len(encontrados)} opciones que coinciden exactamente con tus criterios.")
+            
+            # Generar Explicación del Asistente (Con IA o Fallback)
+            info_mascota_busqueda = f"{b_especie} en la zona de {b_zona} para el servicio de {b_servicio}"
+            explicacion = obtener_explicacion_asistente(encontrados, info_mascota_busqueda)
+            
+            st.markdown("### 🤖 Recomendación del Asistente YokiPet")
+            st.info(explicacion)
+            
+            for cuid in encontrados:
+                st.markdown(f"""
+                <div class='card'>
+                    <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {cuid['nombre']}</h3>
+                    <p style='margin: 5px 0;'><b>📍 Zona:</b> {cuid['zona']} | <b>🛠️ Servicio:</b> {cuid['servicio']}</p>
+                    <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> ₡{cuid['tarifa']:,}</p>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.error("😔 No se encontraron cuidadores en el catálogo que coincidan exactamente con tus criterios. Intenta flexibilizar el presupuesto o cambiar de zona.")tario']}.")
             st.markdown("<br>", unsafe_allow_html=True)
