@@ -1,4 +1,3 @@
-%%writefile YokiPet.py
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -41,7 +40,7 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(46, 125, 50, 0.08);
     }
 
-    .main-title {
+    .main-title { 
         font-family: 'Fredoka', sans-serif;
         background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 50%, #ff6b6b 100%);
         -webkit-background-clip: text;
@@ -103,7 +102,7 @@ st.markdown("""
     .aviso-prototipo {
         background: linear-gradient(90deg, #fff3cd 0%, #fef3d6 100%);
         color: #856404;
-        padding: 12px; 
+        padding: 12px;
         border-radius: 12px;
         border: 1px solid #ffeeba;
         text-align: center;
@@ -116,14 +115,14 @@ st.markdown("""
     .hero-banner {
         background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
         border-radius: 20px;
-        padding: 30px;
+        padding: 30px; 
         color: white;
         text-align: center;
         margin-bottom: 30px;
         box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2);
     }
 </style>
-""", unsafe_allow_html=True) 
+""", unsafe_allow_html=True)
 
 # Banner de advertencia obligatorio
 st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. No se realizan reservas reales.</div>', unsafe_allow_html=True)
@@ -131,8 +130,8 @@ st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. 
 # Hero Banner Visual con temática de Patitas, Plumas y Burbujas
 st.markdown("""
 <div class="hero-banner">
-    <h1 style='color: white; margin: 0; font-family: "Fredoka"; font-size: 2.8rem;'>🐾 YokiPet 🪶</h1>
-    <p style='margin: 10px 0 0 0; font-size: 1.2rem; opacity: 0.9;'>🫧 Encuentra amor, seguridad y compañía confiable para tus mascotas preferidas 🫧</p>
+    <h1 style=\'color: white; margin: 0; font-family: "Fredoka"; font-size: 2.8rem;\'>🐾 YokiPet 🪶</h1>
+    <p style=\'margin: 10px 0 0 0; font-size: 1.2rem; opacity: 0.9;\'>🫧 Encuentra amor, seguridad y compañía confiable para tus mascotas preferidas 🫧</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -175,165 +174,57 @@ def obtener_explicacion_asistente(cuidadores_encontrados, mascota_info, moneda_s
 # -----------------------------------------------------
 PAISES_CONFIG = {
     "Costa Rica": {
-        "moneda": "CRC", 
-        "simbolo": "₡", 
-        "cambio_usd": 510.0, 
+        "moneda": "CRC",
+        "simbolo": "₡",
+        "cambio_usd": 510.0,
         "zonas": ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"]
     },
     "México": {
-        "moneda": "MXN", 
-        "simbolo": "Mex$", 
-        "cambio_usd": 17.0, 
+        "moneda": "MXN",
+        "simbolo": "Mex$",
+        "cambio_usd": 17.0,
         "zonas": [
-            "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Chiapas", "Chihuahua", 
-            "Coahuila", "Colima", "CDMX", "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco", 
-            "Estado de México", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla", 
-            "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas", 
+            "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Chiapas", "Chihuahua",
+            "Coahuila", "Colima", "CDMX", "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco",
+            "Estado de México", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla",
+            "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas",
             "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"
         ]
     },
     "Colombia": {
-        "moneda": "COP", 
-        "simbolo": "Col$", 
-        "cambio_usd": 3900.0, 
+        "moneda": "COP",
+        "simbolo": "Col$",
+        "cambio_usd": 3900.0,
         "zonas": [
-            "Amazonas", "Antioquia", "Arauca", "Atlántico", "Bolívar", "Boyacá", "Caldas", "Caquetá", 
-            "Casanare", "Cauca", "Cesar", "Chocó", "Córdoba", "Cundinamarca", "Guainía", "Guaviare", 
-            "Huila", "La Guajira", "Magdalena", "Meta", "Nariño", "Norte de Santander", "Putumayo", 
-            "Quindío", "Risaralda", "San Andrés y Providencia", "Santander", "Sucre", "Tolima", 
+            "Amazonas", "Antioquia", "Arauca", "Atlántico", "Bolívar", "Boyacá", "Caldas", "Caquetá",
+            "Casanare", "Cauca", "Cesar", "Chocó", "Córdoba", "Cundinamarca", "Guainía", "Guaviare",
+            "Huila", "La Guajira", "Magdalena", "Meta", "Nariño", "Norte de Santander", "Putumayo",
+            "Quindío", "Risaralda", "San Andrés y Providencia", "Santander", "Sucre", "Tolima",
             "Valle del Cauca", "Vaupés", "Vichada"
         ]
     },
     "España": {
-        "moneda": "EUR", 
-        "simbolo": "€", 
-        "cambio_usd": 0.92, 
+        "moneda": "EUR",
+        "simbolo": "€",
+        "cambio_usd": 0.92,
         "zonas": [
-            "Andalucía", "Aragón", "Asturias", "Baleares", "Canarias", "Cantabria", "Castilla-La Mancha", 
-            "Castilla y León", "Cataluña", "Comunidad Valenciana", "Extremadura", "Galicia", "Madrid", 
+            "Andalucía", "Aragón", "Asturias", "Baleares", "Canarias", "Cantabria", "Castilla-La Mancha",
+            "Castilla y León", "Cataluña", "Comunidad Valenciana", "Extremadura", "Galicia", "Madrid",
             "Murcia", "Navarra", "País Vasco", "La Rioja", "Ceuta", "Melilla"
         ]
     },
     "Estados Unidos": {
-        "moneda": "USD", 
-        "simbolo": "$", 
-        "cambio_usd": 1.0, 
+        "moneda": "USD",
+        "simbolo": "$",
+        "cambio_usd": 1.0,
         "zonas": [
-            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", 
-            "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", 
-            "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", 
-            "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", 
-            "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", 
-            "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", 
-            "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", 
-            "Wisconsin", "Wyoming"
-        ]
-    }
-}
-
-# -----------------------------------------------------
-# 4. BASE DE DATOS FICTICIA INICIAL EN SESIÓN
-# -----------------------------------------------------
-if "sesion_iniciada" not in st.session_state:
-    st.session_state.sesion_iniciada = False
-if "usuario_nombre" not in st.session_state:
-    st.session_state.usuario_nombre = ""
-if "tipo_perfil" not in st.session_state:
-    st.session_state.tipo_perfil = None
-if "pais_seleccionado" not in st.session_state:
-    st.session_state.pais_seleccionado = "Costa Rica"
-if "tipo_moneda_vista" not in st.session_state:
-    st.session_state.tipo_moneda_vista = "Local"
-
-# Estructuras para Perfil del YokiParent
-if "dueno_perfil" not in st.session_state:
-    st.session_state.dueno_perfil = {
-        "mascotas": [
-            {"nombre": "Toby", "especie": "Perro", "raza": "Golden Retriever", "detalles": "Muy amigable, le gustan los paseos cortos."},
-            {"nombre": "Félix", "especie": "Gato", "raza": "Mestizo", "detalles": "Independiente, asustadizo."},
-            {"nombre": "Burbujas", "especie": "Pez", "raza": "Beta", "detalles": "Alimentar con hojuelas dos veces al día en cantidades pequeñas."}
-        ],
-        "metodo_pago": "Visa terminado en *4321 (Ficticio)",
-        "direccion": "",
-        "telefono_contacto": ""
-    }
-
-# Estructuras para Perfil del YokiSitter
-if "info_cuidador" not in st.session_state:
-    st.session_state.info_cuidador = {
-        "experiencia": "Hola, amo mucho a todos los animales y tengo amplia experiencia cuidando peces, gatos y perros medianos.",
-        "zona": "San José",
-        "tarifa": 15.0,
-        "servicio": "Hospedaje",
-        "especies_aceptadas": ["Perro", "Gato", "Pez"],
-        "completado": True
-    }
-
-if "solicitudes" not in st.session_state:
-    st.session_state.solicitudes = [
-        {
-            "id": 0,
-            "propietario": "María López",
-            "mascotas": ["Toby"],
-            "raza": "Perro, Golden Retriever",
-            "fechas": "15/06/2025 al 20/06/2025",
-            "detalles": "Necesita paseos dos veces al día. Muy amigable.",
-            "estatus": "Pendiente",
-            "postulantes": ["Andrés Fonseca"]
-        },
-        {
-            "id": 1,
-            "propietario": "Carlos Gómez",
-            "mascotas": ["Félix"],
-            "raza": "Gato, Mestizo",
-            "fechas": "01/07/2025 al 05/07/2025",
-            "detalles": "Solo requiere alimentación y limpieza de arenero una vez al día.",
-            "estatus": "Pendiente",
-            "postulantes": []
-        }
-    ]
-
-cuidadores_base_db = [
-    {"nombre": "Lucía Madrigal", "servicio": "Hospedaje", "zona_index": 0, "tarifa_usd": 20.0, "especies": ["Perro", "Gato"], "tamaño": "Todos"},
-    {"nombre": "Andrés Fonseca", "servicio": "Paseos", "zona_index": 1, "tarifa_usd": 10.0, "especies": ["Perro"], "tamaño": "Mediano"},
-    {"nombre": "Valeria Chaves", "servicio": "Guardería", "zona_index": 2, "tarifa_usd": 15.0, "especies": ["Gato", "Pez"], "tamaño": "Todos"}
-]
-
-PASSWORD_CORRECTA = "yoki123"
-
-# -----------------------------------------------------
-# 5. INGRESO SEGURO Y CONTROL DE ACCESO
-# -----------------------------------------------------
-if not st.session_state.sesion_iniciada:
-    st.markdown("### 🔑 Ingreso Seguro a tu Cuenta YokiPet")
-    st.write("Por favor introduce tu información, país y la contraseña demo `yoki123`.")
-
-    with st.form("login_seguro"):
-        nombre_input = st.text_input("Tu Nombre Completo")
-        pais_input = st.selectbox("País del servicio", list(PAISES_CONFIG.keys()))
-        perfil_seleccionado = st.selectbox("Selecciona tu perfil de acceso", ["YokiParent (Dueño)", "YokiSitter (Cuidador)"])
-        password_input = st.text_input("Contraseña de seguridad", type="password")
-        login_btn = st.form_submit_button("Iniciar sesión")
-
-        if login_btn:
-            if nombre_input.strip() == "":
-                st.error("❌ Por favor, ingresa tu nombre.")
-            elif password_input != PASSWORD_CORRECTA:
-                st.error("❌ Contraseña incorrecta. Utiliza la contraseña demo `yoki123`.")
-            else:
-                st.session_state.usuario_nombre = nombre_input
-                st.session_state.tipo_perfil = perfil_seleccionado
-                st.session_state.pais_seleccionado = pais_input
-                st.session_state.info_cuidador["zona"] = PAISES_CONFIG[pais_input]["zonas"][0]
-                st.session_state.sesion_iniciada = True
-                st.success("¡Acceso concedido exitosamente!")
-                st.rerun()
-else:
-    config_actual = PAISES_CONFIG[st.session_state.pais_seleccionado]
-
-    col_usr, col_mon, col_logout = st.columns([2, 1.5, 1])
-    with col_usr:
-        st.info(f             "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", 
+            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+            "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+            "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+            "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+            "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+            "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+            "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
             "Wisconsin", "Wyoming"
         ]
     }
@@ -564,11 +455,11 @@ else:
                         precio_formateado = formatear_precio(cuid['tarifa_usd'])
                         especies_permitidas = ", ".join(cuid.get('especies', []))
                         st.markdown(f"""
-                        <div class='card'>
-                            <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {cuid['nombre']}</h3>
-                            <p style='margin: 5px 0;'><b>📍 Zona:</b> {cuid['zona']} | <b>🛠️ Servicio:</b> {cuid['servicio']}</p>
-                            <p style='margin: 5px 0;'><b>🐾 Especies que cuida:</b> {especies_permitidas}</p>
-                            <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
+                        <div class=\'card\'>
+                            <h3 style=\'margin-top:0; color:#2e7d32; font-family: Fredoka;\'>⭐ {cuid['nombre']}</h3>
+                            <p style=\'margin: 5px 0;\'><b>📍 Zona:</b> {cuid['zona']} | <b>🛠️ Servicio:</b> {cuid['servicio']}</p>
+                            <p style=\'margin: 5px 0;\'><b>🐾 Especies que cuida:</b> {especies_permitidas}</p>
+                            <p style=\'margin: 5px 0;\'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
                         </div>
                         """, unsafe_allow_html=True)
                 else:
@@ -640,12 +531,12 @@ else:
                         est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
                         nombres_m = ", ".join(sol.get("mascotas", []))
                         st.markdown(f"""
-                        <div style='background-color: #ffffff; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #ff7e5f; box-shadow: 0 4px 10px rgba(0,0,0,0.02);'>
-                            <div style='display: flex; justify-content: space-between; align-items: center;'>
-                                <strong style='font-size: 1.15rem; color: #ff7e5f;'>🐾 Mascotas: {nombres_m}</strong>
-                                <span class='badge {est_clase}'>{sol['estatus']}</span>
+                        <div style=\'background-color: #ffffff; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #ff7e5f; box-shadow: 0 4px 10px rgba(0,0,0,0.02);\'>
+                            <div style=\'display: flex; justify-content: space-between; align-items: center;\'>
+                                <strong style=\'font-size: 1.15rem; color: #ff7e5f;\'>🐾 Mascotas: {nombres_m}</strong>
+                                <span class=\'badge {est_clase}\'>{sol['estatus']}</span>
                             </div>
-                            <div style='margin-top: 8px;'>
+                            <div style=\'margin-top: 8px;\'>
                                 🏷️ <b>Detalles:</b> {sol['raza']}<br>
                                 📅 <b>Fechas:</b> {sol['fechas']}<br>
                                 📝 <b>Notas:</b> {sol['detalles']}
@@ -687,7 +578,7 @@ else:
                 ex_input = st.text_area("Presentación, experiencia y cariño que ofreces",
                                         value=st.session_state.info_cuidador["experiencia"],
                                         placeholder="Ej: Cuento con certificación en primeros auxilios para mascotas y amo jugar...")
-                
+
                 col_perf1, col_perf2 = st.columns(2)
                 with col_perf1:
                     zona_input = st.selectbox("Zona de servicio", config_actual["zonas"])
@@ -729,12 +620,12 @@ else:
                 precio_formateado = formatear_precio(st.session_state.info_cuidador["tarifa"])
                 especies_preview = ", ".join(st.session_state.info_cuidador.get("especies_aceptadas", []))
                 st.markdown(f"""
-                <div class='card card-cuidador'>
-                    <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {st.session_state.usuario_nombre} (Tú)</h3>
-                    <p style='margin: 5px 0;'><b>📍 Ubicación:</b> {st.session_state.info_cuidador['zona']} | <b>🛠️ Servicio:</b> {st.session_state.info_cuidador['servicio']}</p>
-                    <p style='margin: 5px 0;'><b>🐾 Mascotas aceptadas:</b> {especies_preview}</p>
-                    <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
-                    <p style='margin: 10px 0; font-style: italic; color:#555;'>"{st.session_state.info_cuidador['experiencia']}"</p>
+                <div class=\'card card-cuidador\'>
+                    <h3 style=\'margin-top:0; color:#2e7d32; font-family: Fredoka;\'>⭐ {st.session_state.usuario_nombre} (Tú)</h3>
+                    <p style=\'margin: 5px 0;\'><b>📍 Ubicación:</b> {st.session_state.info_cuidador['zona']} | <b>🛠️ Servicio:</b> {st.session_state.info_cuidador['servicio']}</p>
+                    <p style=\'margin: 5px 0;\'><b>🐾 Mascotas aceptadas:</b> {especies_preview}</p>
+                    <p style=\'margin: 5px 0;\'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
+                    <p style=\'margin: 10px 0; font-style: italic; color:#555;\'>"{st.session_state.info_cuidador['experiencia']}"</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -752,12 +643,12 @@ else:
                     est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
                     nombres_m_sol = ", ".join(sol.get("mascotas", []))
                     st.markdown(f"""
-                    <div style='background-color: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d4edda; box-shadow: 0 4px 10px rgba(0,0,0,0.02);'>
-                        <div style='display: flex; justify-content: space-between; align-items: center;'>
+                    <div style=\'background-color: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d4edda; box-shadow: 0 4px 10px rgba(0,0,0,0.02);\'>
+                        <div style=\'display: flex; justify-content: space-between; align-items: center;\'>
                             <strong>🐾 Solicitud de {sol['propietario']} ({nombres_m_sol})</strong>
-                            <span class='badge {est_clase}'>{sol['estatus']}</span>
+                            <span class=\'badge {est_clase}\'>{sol['estatus']}</span>
                         </div>
-                        <p style='margin: 5px 0 0 0; font-size: 0.9rem; color: #666;'><b>📅 Fechas:</b> {sol['fechas']}</p>
+                        <p style=\'margin: 5px 0 0 0; font-size: 0.9rem; color: #666;\'><b>📅 Fechas:</b> {sol['fechas']}</p>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -772,15 +663,15 @@ else:
                     est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
                     nombres_m_sol = ", ".join(sol.get("mascotas", []))
                     st.markdown(f"""
-                    <div class='card'>
-                        <div style='display: flex; justify-content: space-between; align-items: center;'>
-                            <h3 style='margin-top:0; color:#ff7e5f; font-family: Fredoka;'>🐾 {nombres_m_sol}</h3>
-                            <span class='badge {est_clase}'>{sol['estatus']}</span>
+                    <div class=\'card\'>
+                        <div style=\'display: flex; justify-content: space-between; align-items: center;\'>
+                            <h3 style=\'margin-top:0; color:#ff7e5f; font-family: Fredoka;\'>🐾 {nombres_m_sol}</h3>
+                            <span class=\'badge {est_clase}\'>{sol['estatus']}</span>
                         </div>
-                        <p style='margin: 5px 0;'><b>👤 YokiParent:</b> {sol['propietario']}</p>
-                        <p style='margin: 5px 0;'><b>🏷️ Mascotas:</b> {sol['raza']}</p>
-                        <p style='margin: 5px 0;'><b>📅 Fechas solicitadas:</b> {sol['fechas']}</p>
-                        <p style='margin: 10px 0; font-style: italic; color:#555;'>" {sol['detalles']} "</p>
+                        <p style=\'margin: 5px 0;\'><b>👤 YokiParent:</b> {sol['propietario']}</p>
+                        <p style=\'margin: 5px 0;\'><b>🏷️ Mascotas:</b> {sol['raza']}</p>
+                        <p style=\'margin: 5px 0;\'><b>📅 Fechas solicitadas:</b> {sol['fechas']}</p>
+                        <p style=\'margin: 10px 0; font-style: italic; color:#555;\'>" {sol['detalles']} "</p>
                     </div>
                     """, unsafe_allow_html=True)
 
