@@ -73,7 +73,7 @@ st.markdown("""
 st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. No se realizan reservas reales.</div>', unsafe_allow_html=True)
 
 st.markdown('<h1 class="main-title">🐾 YokiPet</h1>', unsafe_allow_html=True)
-st.markdown('<div class="creative-slogan">La red de confianza para el cuidado de tus <span class="slogan-highlight">mascotas</span> en Costa Rica</div>', unsafe_allow_html=True)
+st.markdown('<div class="creative-slogan">La red de confianza para el cuidado de tus <span class="slogan-highlight">mascotas</span></div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------
 # 2. CONFIGURACIÓN DE SECRETOS Y PIEZA DE IA (GEMINI)
@@ -90,13 +90,14 @@ if gemini_key:
     except Exception as e:
         pass
 
-def obtener_explicacion_asistente(cuidadores_encontrados, mascota_info):
+def obtener_explicacion_asistente(cuidadores_encontrados, mascota_info, moneda_simbolo):
     if not usar_ia or not client:
         return "*Modo sin IA activo. El catálogo determinista te asegura la mejor coincidencia según los filtros ingresados.*"
 
-    prompt = f"""Actúa como un asistente experto de YokiPet en Costa Rica.
+    prompt = f"""Actúa como un asistente experto de YokiPet.
     Analiza los siguientes cuidadores que cumplen con los filtros aplicados: {cuidadores_encontrados}.
     Explica brevemente y con un tono cálido al propietario de la mascota ({mascota_info}) por qué estas opciones son óptimas.
+    Asegúrate de mostrar los precios usando el símbolo de moneda de visualización: {moneda_simbolo}.
     No inventes tarifas, zonas, nombres ni valoraciones que no estén explícitas en los datos proporcionados."""
 
     try:
@@ -109,7 +110,18 @@ def obtener_explicacion_asistente(cuidadores_encontrados, mascota_info):
         return "⚠️ La IA explicativa no está disponible temporalmente por límites de cuota o de red."
 
 # -----------------------------------------------------
-# 3. BASE DE DATOS FICTICIA INICIAL EN SESIÓN
+# 3. CONFIGURACIÓN DE PAÍSES Y TIPOS DE CAMBIO
+# -----------------------------------------------------
+PAISES_CONFIG = {
+    "Costa Rica": {"moneda": "CRC", "simbolo": "₡", "cambio_usd": 510.0, "zonas": ["San José", "Heredia", "Alajuela"]},
+    "México": {"moneda": "MXN", "simbolo": "Mex$", "cambio_usd": 17.0, "zonas": ["CDMX", "Guadalajara", "Monterrey"]},
+    "Colombia": {"moneda": "COP", "simbolo": "Col$", "cambio_usd": 3900.0, "zonas": ["Bogotá", "Medellín", "Cali"]},
+    "España": {"moneda": "EUR", "simbolo": "€", "cambio_usd": 0.92, "zonas": ["Madrid", "Barcelona", "Valencia"]},
+    "Estados Unidos": {"moneda": "USD", "simbolo": "$", "cambio_usd": 1.0, "zonas": ["Miami", "Nueva York", "Los Ángeles"]}
+}
+
+# -----------------------------------------------------
+# 4. BASE DE DATOS FICTICIA INICIAL EN SESIÓN
 # -----------------------------------------------------
 if "sesion_iniciada" not in st.session_state:
     st.session_state.sesion_iniciada = False
@@ -117,12 +129,18 @@ if "usuario_nombre" not in st.session_state:
     st.session_state.usuario_nombre = ""
 if "tipo_perfil" not in st.session_state:
     st.session_state.tipo_perfil = None
+if "pais_seleccionado" not in st.session_state:
+    st.session_state.pais_seleccionado = "Costa Rica"
+if "tipo_moneda_vista" not in st.session_state:
+    st.session_state.tipo_moneda_vista = "Local" # Local o USD
+
 if "info_cuidador" not in st.session_state:
     st.session_state.info_cuidador = {
-        "experiencia": "Excelente trato y cariño para tus mascotas.",
+        "experiencia": "",
         "zona": "San José",
-        "tarifa": 10000,
-        "servicio": "Hospedaje"
+        "tarifa": 8000,
+        "servicio": "Hospedaje",
+        "completado": False
     }
 
 if "solicitudes" not in st.session_state:
@@ -143,24 +161,25 @@ if "solicitudes" not in st.session_state:
         }
     ]
 
-cuidadores_db = [
-    {"nombre": "Lucía Madrigal", "servicio": "Hospedaje", "zona": "San José", "tarifa": 12000, "especie": "Perro", "tamaño": "Todos"},
-    {"nombre": "Andrés Fonseca", "servicio": "Paseos", "zona": "Heredia", "tarifa": 5000, "especie": "Perro", "tamaño": "Mediano"},
-    {"nombre": "Valeria Chaves", "servicio": "Guardería", "zona": "Alajuela", "tarifa": 8000, "especie": "Gato", "tamaño": "Todos"}
+# Catálogo original base indexado en USD para conversión consistente en cada país
+cuidadores_base_db = [
+    {"nombre": "Lucía Madrigal", "servicio": "Hospedaje", "zona_index": 0, "tarifa_usd": 20.0, "especie": "Perro", "tamaño": "Todos"},
+    {"nombre": "Andrés Fonseca", "servicio": "Paseos", "zona_index": 1, "tarifa_usd": 10.0, "especie": "Perro", "tamaño": "Mediano"},
+    {"nombre": "Valeria Chaves", "servicio": "Guardería", "zona_index": 2, "tarifa_usd": 15.0, "especie": "Gato", "tamaño": "Todos"}
 ]
 
-# Contraseña de simulación fija para el acceso del prototipo
 PASSWORD_CORRECTA = "yoki123"
 
 # -----------------------------------------------------
-# 4. FLUJO DE CONTROL DE ACCESO CON CONTRASEÑA
+# 5. FLUJO DE CONTROL DE ACCESO CON PAÍS Y CONTRASEÑA
 # -----------------------------------------------------
 if not st.session_state.sesion_iniciada:
     st.markdown("### 🔑 Ingreso Seguro a tu Cuenta YokiPet")
-    st.write("Por favor introduce tu información y contraseña demo `yoki123`.")
+    st.write("Por favor introduce tu información, país y la contraseña demo `yoki123`.")
     
     with st.form("login_seguro"):
         nombre_input = st.text_input("Tu Nombre Completo")
+        pais_input = st.selectbox("País del servicio", list(PAISES_CONFIG.keys()))
         perfil_seleccionado = st.selectbox("Selecciona tu perfil de acceso", ["Dueño de Mascota", "Cuidador de Mascota"])
         password_input = st.text_input("Contraseña de seguridad", type="password")
         login_btn = st.form_submit_button("Iniciar sesión")
@@ -173,30 +192,47 @@ if not st.session_state.sesion_iniciada:
             else:
                 st.session_state.usuario_nombre = nombre_input
                 st.session_state.tipo_perfil = perfil_seleccionado
+                st.session_state.pais_seleccionado = pais_input
+                # Configurar zona por defecto según país seleccionado
+                st.session_state.info_cuidador["zona"] = PAISES_CONFIG[pais_input]["zonas"][0]
                 st.session_state.sesion_iniciada = True
                 st.success("¡Acceso concedido exitosamente!")
                 st.rerun()
 else:
-    # Cabecera de usuario con logout
-    col_usr, col_logout = st.columns([3, 1])
+    # Datos de configuración del país seleccionado
+    config_actual = PAISES_CONFIG[st.session_state.pais_seleccionado]
+    
+    # Cabecera de usuario con logout y selectores globales de moneda
+    col_usr, col_mon, col_logout = st.columns([2, 1.5, 1])
     with col_usr:
-        st.info(f"👤 Conectado como: **{st.session_state.usuario_nombre}** | Rol: **{st.session_state.tipo_perfil}**")
+        st.info(f"👤 **{st.session_state.usuario_nombre}** | {st.session_state.pais_seleccionado} ({st.session_state.tipo_perfil})")
+    with col_mon:
+        st.session_state.tipo_moneda_vista = st.radio("Visualización de Moneda:", ["Local", "USD"], horizontal=True, index=0 if st.session_state.tipo_moneda_vista == "Local" else 1)
     with col_logout:
         if st.button("Cerrar sesión"):
             st.session_state.sesion_iniciada = False
             st.session_state.usuario_nombre = ""
             st.session_state.tipo_perfil = None
+            st.session_state.info_cuidador["completado"] = False
             st.rerun()
 
+    # Función de formateo dinámico
+    def formatear_precio(tarifa_usd):
+        if st.session_state.tipo_moneda_vista == "USD":
+            return f"${tarifa_usd:.2f} USD"
+        else:
+            valor_local = tarifa_usd * config_actual["cambio_usd"]
+            return f"{config_actual['simbolo']}{valor_local:,.0f} {config_actual['moneda']}"
+
     # -----------------------------------------------------
-    # 5. DIRECCIONAMIENTO INTELIGENTE SEGÚN PERFIL
+    # 6. DIRECCIONAMIENTO INTELIGENTE SEGÚN PERFIL
     # -----------------------------------------------------
     if st.session_state.tipo_perfil == "Dueño de Mascota":
         tab1, tab2 = st.tabs(["🙋‍♂️ Publicar Solicitud de Cuidado", "🔎 Buscar Cuidador con IA"])
         
         with tab1:
             st.header("Publicar Solicitud de Cuidado")
-            st.write("Completa el formulario para que un cuidador se postule de manera simulada.")
+            st.write(f"Completa el formulario para publicar tu solicitud en **{st.session_state.pais_seleccionado}**.")
 
             with st.form("solicitud_form", clear_on_submit=True):
                 nombre_dueño = st.text_input("Nombre del dueño", value=st.session_state.usuario_nombre, disabled=True)
@@ -229,67 +265,101 @@ else:
 
         with tab2:
             st.header("Buscador Inteligente de Cuidadores")
-            st.write("Filtra nuestro catálogo y deja que el asistente te recomiende las mejores opciones.")
+            st.write(f"Filtra nuestro catálogo en **{st.session_state.pais_seleccionado}** y deja que el asistente te recomiende las mejores opciones.")
 
             b_servicio = st.selectbox("Servicio requerido", ["Hospedaje", "Guardería", "Paseos"])
-            b_zona = st.selectbox("Ubicación en Costa Rica", ["San José", "Heredia", "Alajuela"])
+            b_zona = st.selectbox("Ubicación / Zona de servicio", config_actual["zonas"])
             b_especie = st.selectbox("Especie de mascota", ["Perro", "Gato"])
-            b_presupuesto = st.number_input("Presupuesto máximo (₡)", min_value=1000, value=15000, step=1000)
+            
+            # Convertir presupuesto ingresado a USD para un filtrado consistente
+            moneda_display = "USD" if st.session_state.tipo_moneda_vista == "USD" else config_actual["moneda"]
+            b_presupuesto = st.number_input(f"Presupuesto máximo ({moneda_display})", min_value=1, value=50, step=5)
+            
+            presupuesto_usd = b_presupuesto if st.session_state.tipo_moneda_vista == "USD" else (b_presupuesto / config_actual["cambio_usd"])
 
             if st.button("Buscar Cuidador ideal"):
+                # Recrear catálogo dinámico según zonas del país
+                cat_local = []
+                for i, c in enumerate(cuidadores_base_db):
+                    c_copia = c.copy()
+                    c_copia["zona"] = config_actual["zonas"][c["zona_index"]]
+                    cat_local.append(c_copia)
+
                 encontrados = [
-                    c for c in cuidadores_db
+                    c for c in cat_local
                     if c['servicio'] == b_servicio
                     and c['zona'] == b_zona
                     and c['especie'] == b_especie
-                    and c['tarifa'] <= b_presupuesto
+                    and c['tarifa_usd'] <= presupuesto_usd
                 ]
 
                 if encontrados:
                     st.success(f"Se encontraron {len(encontrados)} opciones que coinciden exactamente con tus criterios.")
                     info_mascota_busqueda = f"{b_especie} en la zona de {b_zona} para el servicio de {b_servicio}"
-                    explicacion = obtener_explicacion_asistente(encontrados, info_mascota_busqueda)
+                    explicacion = obtener_explicacion_asistente(encontrados, info_mascota_busqueda, config_actual['simbolo'] if st.session_state.tipo_moneda_vista == 'Local' else '$')
 
                     st.markdown("### 🤖 Recomendación del Asistente YokiPet")
                     st.info(explicacion)
 
                     for cuid in encontrados:
+                        precio_formateado = formatear_precio(cuid['tarifa_usd'])
                         st.markdown(f"""
                         <div class='card'>
                             <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {cuid['nombre']}</h3>
                             <p style='margin: 5px 0;'><b>📍 Zona:</b> {cuid['zona']} | <b>🛠️ Servicio:</b> {cuid['servicio']}</p>
-                            <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> ₡{cuid['tarifa']:,}</p>
+                            <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
                         </div>
                         """, unsafe_allow_html=True)
                 else:
                     st.error("😔 No se encontraron cuidadores en el catálogo que coincidan exactamente con tus criterios.")
 
     elif st.session_state.tipo_perfil == "Cuidador de Mascota":
-        tab1, tab2 = st.tabs(["🏡 Mi Información de Cuidador", "🔎 Solicitudes de Cuidado Activas"])
+        tab1, tab2 = st.tabs(["🏡 Mi Perfil de Cuidadora", "🔎 Solicitudes de Dueños Activas"])
         
         with tab1:
-            st.header("⚙️ Mi Perfil de Cuidador de Confianza")
-            st.write("Aquí puedes definir tu tarifa diaria y tu cobertura para aparecer en las búsquedas.")
+            st.header("⚙️ Mi Perfil de Cuidador Profesional")
+            st.write(f"Completa y mantén actualizada tu información de servicio para el mercado de **{st.session_state.pais_seleccionado}**.")
             
             with st.form("perfil_cuidador"):
-                ex_input = st.text_area("Presentación / Experiencia profesional", value=st.session_state.info_cuidador["experiencia"])
-                zona_input = st.selectbox("Zona de servicio", ["San José", "Heredia", "Alajuela"], index=["San José", "Heredia", "Alajuela"].index(st.session_state.info_cuidador["zona"]))
-                tarifa_input = st.number_input("Tarifa por día (₡)", min_value=1000, value=st.session_state.info_cuidador["tarifa"], step=500)
-                servicio_input = st.selectbox("Servicio principal", ["Hospedaje", "Guardería", "Paseos"], index=["Hospedaje", "Guardería", "Paseos"].index(st.session_state.info_cuidador["servicio"]))
+                ex_input = st.text_area("Presentación, experiencia y cariño que ofreces", 
+                                        value=st.session_state.info_cuidador["experiencia"], 
+                                        placeholder="Ej: Tengo 5 años de experiencia cuidando perritos medianos, me encanta sacarlos a pasear al parque...")
+                zona_input = st.selectbox("Zona de servicio", config_actual["zonas"])
                 
-                guardar_perfil = st.form_submit_button("Guardar Perfil")
+                unidad_tarifa = "USD" if st.session_state.tipo_moneda_vista == "USD" else config_actual["moneda"]
+                tarifa_input = st.number_input(f"Mi Tarifa sugerida por día ({unidad_tarifa})", min_value=1, value=20, step=5)
+                servicio_input = st.selectbox("Servicio principal que ofrezco", ["Hospedaje", "Guardería", "Paseos"])
+                
+                guardar_perfil = st.form_submit_button("💾 Guardar y Actualizar Perfil")
                 if guardar_perfil:
-                    st.session_state.info_cuidador = {
-                        "experiencia": ex_input,
-                        "zona": zona_input,
-                        "tarifa": tarifa_input,
-                        "servicio": servicio_input
-                    }
-                    st.success("🎉 ¡Tu información de Cuidador se actualizó con éxito!")
+                    if ex_input.strip() == "":
+                        st.error("⚠️ Por favor escribe una breve descripción sobre ti antes de guardar.")
+                    else:
+                        tarifa_en_usd = tarifa_input if st.session_state.tipo_moneda_vista == "USD" else (tarifa_input / config_actual["cambio_usd"])
+                        st.session_state.info_cuidador = {
+                            "experiencia": ex_input,
+                            "zona": zona_input,
+                            "tarifa": tarifa_en_usd,
+                            "servicio": servicio_input,
+                            "completado": True
+                        }
+                        st.success("🎉 ¡Tu información de Cuidador se actualizó con éxito en el sistema!")
+
+            if st.session_state.info_cuidador["completado"]:
+                st.markdown("### 📇 Vista Previa de tu Tarjeta de Presentación")
+                precio_formateado = formatear_precio(st.session_state.info_cuidador["tarifa"])
+                st.markdown(f"""
+                <div class='card' style='border-left: 5px solid #2e7d32;'>
+                    <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {st.session_state.usuario_nombre} (Tú)</h3>
+                    <p style='margin: 5px 0;'><b>📍 Zona:</b> {st.session_state.info_cuidador['zona']} | <b>🛠️ Servicio:</b> {st.session_state.info_cuidador['servicio']}</p>
+                    <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
+                    <p style='margin: 10px 0; font-style: italic; color:#555;'>"{st.session_state.info_cuidador['experiencia']}"</p>
+                </div>
+                """, unsafe_allow_html=True)
 
         with tab2:
             st.markdown("### 🔎 Solicitudes de Cuidado Activas")
-            st.write("Siguiente lista de dueños que necesitan tu atención urgente:")
+            st.write(f"Estos dueños de mascotas en **{st.session_state.pais_seleccionado}** necesitan tu ayuda urgentemente:")
             if len(st.session_state.solicitudes) == 0:
                 st.info("🌈 No hay anuncios pendientes en este momento.")
             else:
