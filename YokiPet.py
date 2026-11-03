@@ -17,27 +17,27 @@ st.markdown("""
         font-family: 'Quicksand', sans-serif;
     }
 
-    /* Tarjetas con efecto 3D sutil y degradados */
+    /* Tarjetas con efecto 3D sutil, gradientes de borde y sombras profundas */
     .card {
         background-color: #ffffff;
         padding: 24px;
         border-radius: 20px;
-        box-shadow: 0 8px 24px rgba(255, 126, 95, 0.08);
+        box-shadow: 0 10px 30px rgba(255, 126, 95, 0.08);
         border-left: 6px solid #ff7e5f;
         margin-bottom: 22px;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition: transform 0.3s, box-shadow 0.3s;
         border-top: 1px solid rgba(255, 126, 95, 0.1);
     }
-    
+
     .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(255, 126, 95, 0.15);
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px rgba(255, 126, 95, 0.15);
     }
 
     /* Tarjeta específica para el perfil del cuidador */
     .card-cuidador {
         border-left: 6px solid #2e7d32;
-        box-shadow: 0 8px 24px rgba(46, 125, 50, 0.08);
+        box-shadow: 0 10px 30px rgba(46, 125, 50, 0.08);
     }
 
     .main-title {
@@ -67,12 +67,12 @@ st.markdown("""
         border: 1px solid rgba(255, 126, 95, 0.15);
     }
 
-    .slogan-highlight {
+    .slogan-highlight { 
         color: #ff7e5f;
         font-weight: 700;
     }
 
-    /* Insignias de estatus visuales y atractivas */
+    /* Insignias de estatus visuales y dinámicas */
     .badge {
         display: inline-block;
         padding: 6px 14px;
@@ -110,14 +110,30 @@ st.markdown("""
         margin-bottom: 25px;
         box-shadow: 0 4px 10px rgba(133, 100, 4, 0.05);
     }
+
+    /* Banner Visualmente Atractivo */
+    .hero-banner {
+        background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+        border-radius: 20px;
+        padding: 30px;
+        color: white;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 25px rgba(255, 126, 95, 0.2);
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # Banner de advertencia obligatorio
 st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. No se realizan reservas reales.</div>', unsafe_allow_html=True)
 
-st.markdown('<h1 class="main-title">🐾 YokiPet</h1>', unsafe_allow_html=True)
-st.markdown('<div class="creative-slogan">La red de confianza para el cuidado de tus <span class="slogan-highlight">mascotas</span></div>', unsafe_allow_html=True)
+# Hero Banner Visual
+st.markdown("""
+<div class="hero-banner">
+    <h1 style='color: white; margin: 0; font-family: "Fredoka"; font-size: 2.8rem;'>🐶 Bienvenido a YokiPet 🐱</h1>
+    <p style='margin: 10px 0 0 0; font-size: 1.2rem; opacity: 0.9;'>Encuentra amor, seguridad y compañía confiable para tus mascotas preferidas</p>
+</div>
+""", unsafe_allow_html=True)
 
 # -----------------------------------------------------
 # 2. CONFIGURACIÓN DE SECRETOS Y PIEZA DE IA (GEMINI)
@@ -154,14 +170,64 @@ def obtener_explicacion_asistente(cuidadores_encontrados, mascota_info, moneda_s
         return "⚠️ La IA explicativa no está disponible temporalmente por límites de cuota o de red."
 
 # -----------------------------------------------------
-# 3. CONFIGURACIÓN DE PAÍSES Y TIPOS DE CAMBIO
+# 3. LISTAS EXHAUSTIVAS DE PROVINCIAS Y ESTADOS (PAÍSES)
 # -----------------------------------------------------
 PAISES_CONFIG = {
-    "Costa Rica": {"moneda": "CRC", "simbolo": "₡", "cambio_usd": 510.0, "zonas": ["San José", "Heredia", "Alajuela"]},
-    "México": {"moneda": "MXN", "simbolo": "Mex$", "cambio_usd": 17.0, "zonas": ["CDMX", "Guadalajara", "Monterrey"]},
-    "Colombia": {"moneda": "COP", "simbolo": "Col$", "cambio_usd": 3900.0, "zonas": ["Bogotá", "Medellín", "Cali"]},
-    "España": {"moneda": "EUR", "simbolo": "€", "cambio_usd": 0.92, "zonas": ["Madrid", "Barcelona", "Valencia"]},
-    "Estados Unidos": {"moneda": "USD", "simbolo": "$", "cambio_usd": 1.0, "zonas": ["Miami", "Nueva York", "Los Ángeles"]}
+    "Costa Rica": {
+        "moneda": "CRC", 
+        "simbolo": "₡", 
+        "cambio_usd": 510.0, 
+        "zonas": ["San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón"]
+    },
+    "México": {
+        "moneda": "MXN", 
+        "simbolo": "Mex$", 
+        "cambio_usd": 17.0, 
+        "zonas": [
+            "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Chiapas", "Chihuahua", 
+            "Coahuila", "Colima", "CDMX", "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco", 
+            "Estado de México", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla", 
+            "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas", 
+            "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"
+        ]
+    },
+    "Colombia": {
+        "moneda": "COP", 
+        "simbolo": "Col$", 
+        "cambio_usd": 3900.0, 
+        "zonas": [
+            "Amazonas", "Antioquia", "Arauca", "Atlántico", "Bolívar", "Boyacá", "Caldas", "Caquetá", 
+            "Casanare", "Cauca", "Cesar", "Chocó", "Córdoba", "Cundinamarca", "Guainía", "Guaviare", 
+            "Huila", "La Guajira", "Magdalena", "Meta", "Nariño", "Norte de Santander", "Putumayo", 
+            "Quindío", "Risaralda", "San Andrés y Providencia", "Santander", "Sucre", "Tolima", 
+            "Valle del Cauca", "Vaupés", "Vichada"
+        ]
+    },
+    "España": {
+        "moneda": "EUR", 
+        "simbolo": "€", 
+        "cambio_usd": 0.92, 
+        "zonas": [
+            "Andalucía", "Aragón", "Asturias", "Baleares", "Canarias", "Cantabria", "Castilla-La Mancha", 
+            "Castilla y León", "Cataluña", "Comunidad Valenciana", "Extremadura", "Galicia", "Madrid", 
+            "Murcia", "Navarra", "País Vasco", "La Rioja", "Ceuta", "Melilla"
+        ]
+    },
+    "Estados Unidos": {
+        "moneda": "USD", 
+        "simbolo": "$", 
+        "cambio_usd": 1.0, 
+        "zonas": [
+            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", 
+            "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", 
+            "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", 
+            "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", 
+            "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", 
+            "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", 
+            "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", 
+            "Wisconsin", "Wyoming"
+        ]
+    }
 }
 
 # -----------------------------------------------------
@@ -191,13 +257,14 @@ if "dueno_perfil" not in st.session_state:
         "telefono_contacto": ""
     }
 
+# Estructuras para Perfil del Cuidador
 if "info_cuidador" not in st.session_state:
     st.session_state.info_cuidador = {
-        "experiencia": "",
+        "experiencia": "Hola, amo mucho a todos los animales y tengo amplia experiencia cuidando peces, gatos y perros medianos.",
         "zona": "San José",
-        "tarifa": 8000,
+        "tarifa": 15.0, # Guardado base en USD
         "servicio": "Hospedaje",
-        "completado": False
+        "completado": True
     }
 
 if "solicitudes" not in st.session_state:
@@ -233,7 +300,7 @@ cuidadores_base_db = [
 PASSWORD_CORRECTA = "yoki123"
 
 # -----------------------------------------------------
-# 5. FLUJO DE CONTROL DE ACCESO CON PAÍS Y CONTRASEÑA
+# 5. INGRESO SEGURO Y CONTROL DE ACCESO
 # -----------------------------------------------------
 if not st.session_state.sesion_iniciada:
     st.markdown("### 🔑 Ingreso Seguro a tu Cuenta YokiPet")
@@ -283,7 +350,7 @@ else:
             return f"{config_actual['simbolo']}{valor_local:,.0f} {config_actual['moneda']}"
 
     # -----------------------------------------------------
-    # 6. DIRECCIONAMIENTO INTELIGENTE SEGÚN PERFIL
+    # 6. PANEL DE DUEÑOS DE MASCOTAS
     # -----------------------------------------------------
     if st.session_state.tipo_perfil == "Dueño de Mascota":
         tab1, tab2, tab3 = st.tabs(["🙋‍♂️ Publicar Solicitud", "🔎 Buscar Cuidador con IA", "⚙️ Mi Perfil de Dueño"])
@@ -293,7 +360,7 @@ else:
             st.write(f"Completa el formulario para publicar tu solicitud en **{st.session_state.pais_seleccionado}**.")
 
             lista_mascotas = st.session_state.dueno_perfil["mascotas"]
-            
+
             if len(lista_mascotas) == 0:
                 st.warning("⚠️ No tienes mascotas registradas. Ve a la pestaña 'Mi Perfil de Dueño' para agregar tus mascotas.")
                 pet_names = ["Escribir manualmente"]
@@ -304,7 +371,7 @@ else:
 
             with st.form("solicitud_form", clear_on_submit=True):
                 nombre_dueño = st.text_input("Nombre del dueño", value=st.session_state.usuario_nombre, disabled=True)
-                
+
                 if mascota_seleccionada != "Otra mascota" and mascota_seleccionada != "Escribir manualmente" and len(lista_mascotas) > 0:
                     datos_pet = next((item for item in lista_mascotas if item["nombre"] == mascota_seleccionada), None)
                     nombre_mascota = st.text_input("Nombre de tu mascota", value=datos_pet["nombre"], disabled=True)
@@ -358,7 +425,9 @@ else:
                 cat_local = []
                 for i, c in enumerate(cuidadores_base_db):
                     c_copia = c.copy()
-                    c_copia["zona"] = config_actual["zonas"][c["zona_index"]]
+                    # Mapear a una de las zonas disponibles en el país actual
+                    idx_zona = c["zona_index"] % len(config_actual["zonas"])
+                    c_copia["zona"] = config_actual["zonas"][idx_zona]
                     cat_local.append(c_copia)
 
                 encontrados = [
@@ -391,13 +460,13 @@ else:
 
         with tab3:
             st.markdown("### ⚙️ Mi Perfil de Dueño de Mascotas")
-            
+
             st.markdown("#### 💳 Información de Perfil General")
             with st.form("dueño_info_form"):
-                dir_input = st.text_input("Mi Dirección de Residencia", value=st.session_state.dueno_perfil["direccion"], placeholder="Ej: Barrio Amón, San José")
+                dir_input = st.text_input("Mi Dirección de Residencia", value=st.session_state.dueno_perfil["direccion"], placeholder="Ej: San José centro")
                 tel_input = st.text_input("Número de Teléfono", value=st.session_state.dueno_perfil["telefono_contacto"], placeholder="Ej: +506 8888-8888")
                 pago_input = st.selectbox("Método de Pago Preferido", ["Visa terminado en *4321 (Ficticio)", "Mastercard terminado en *9876 (Ficticio)", "YokiPay Wallet"])
-                
+
                 guardar_perfil_dueño = st.form_submit_button("Guardar Información de Perfil")
                 if guardar_perfil_dueño:
                     st.session_state.dueno_perfil["direccion"] = dir_input
@@ -405,9 +474,7 @@ else:
                     st.session_state.dueno_perfil["metodo_pago"] = pago_input
                     st.success("✅ ¡Información de perfil actualizada exitosamente!")
 
-            # Sub-sección 2: Mis Mascotas Registradas (Agregar / Eliminar)
             st.markdown("#### 🐠 Mis Mascotas Registradas")
-            
             if len(st.session_state.dueno_perfil["mascotas"]) == 0:
                 st.info("Aún no tienes mascotas registradas. Agrega una abajo.")
             else:
@@ -427,7 +494,7 @@ else:
                 n_especie = st.selectbox("Especie", ["Perro", "Gato", "Pez", "Ave", "Hámster", "Otro"])
                 n_raza = st.text_input("Raza / Descripción física")
                 n_detalles = st.text_area("Comportamiento o cuidados particulares")
-                
+
                 add_btn = st.form_submit_button("➕ Registrar Mascota")
                 if add_btn:
                     if n_nombre.strip() == "":
@@ -443,13 +510,12 @@ else:
                         st.success(f"🎉 ¡{n_nombre} ha sido agregada a tu perfil!")
                         st.rerun()
 
-            # Sub-sección 3: Historial y Control de Publicaciones
             st.markdown("#### 📋 Mis Anuncios Publicados y Estado de Postulaciones")
             mis_solicitudes = [
                 sol for sol in st.session_state.solicitudes
                 if sol["propietario"] == st.session_state.usuario_nombre
             ]
-            
+
             if len(mis_solicitudes) == 0:
                 st.info("No has publicado ningún anuncio de cuidado activo en esta sesión.")
             else:
@@ -468,44 +534,50 @@ else:
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
-                        
-                        # Visualizar postulaciones recibidas para este anuncio específico
+
                         if sol["estatus"] == "Pendiente":
                             if len(sol["postulantes"]) > 0:
                                 st.write("👥 **Cuidadores postulados para este anuncio:**")
                                 for postulante in sol["postulantes"]:
                                     c1, c2, c3 = st.columns([2, 1, 1])
                                     with c1:
-                                        st.write(f"🔹 **{postulante}** se ofreció para cuidar a {sol['mascota']}.")
+                                        st.write(f"🔹 **{postulante}**")
                                     with c2:
                                         if st.button("✅ Aprobar", key=f"aprob_{sol['id']}_{postulante}"):
                                             sol["estatus"] = "Aprobado"
-                                            st.success(f"¡Has aprobado a {postulante} para el cuidado de {sol['mascota']}!")
+                                            st.success(f"¡Has aprobado a {postulante}!")
                                             st.rerun()
                                     with c3:
                                         if st.button("❌ Rechazar", key=f"rech_{sol['id']}_{postulante}"):
                                             sol["estatus"] = "Rechazado"
-                                            st.warning(f"Has rechazado la postulación de {postulante}.")
+                                            st.warning(f"Has rechazado a {postulante}.")
                                             st.rerun()
                             else:
                                 st.write("⏳ Aún no se han recibido postulaciones para esta solicitud.")
 
+    # -----------------------------------------------------
+    # 7. PANEL DE CUIDADORES DE MASCOTAS
+    # -----------------------------------------------------
     elif st.session_state.tipo_perfil == "Cuidador de Mascota":
-        tab1, tab2 = st.tabs(["🏡 Mi Perfil de Cuidador", "🔎 Solicitudes de Dueños Activas"])
+        tab1, tab2 = st.tabs(["🏡 Acceso a mi Perfil", "🔎 Solicitudes de Dueños Activas"])
 
         with tab1:
-            st.markdown("### 🏡 Mi Perfil de Cuidador Profesional")
-            st.write(f"Completa tu información de servicio para el mercado de **{st.session_state.pais_seleccionado}**.")
+            st.markdown("### 🏡 Acceso a mi Perfil de Cuidador")
+            st.write(f"Gestiona tu experiencia, tarifas de servicio y revisa tus postulaciones en **{st.session_state.pais_seleccionado}**.")
 
-            with st.form("perfil_cuidador"):
+            with st.form("perfil_cuidador_completo"):
                 ex_input = st.text_area("Presentación, experiencia y cariño que ofreces",
                                         value=st.session_state.info_cuidador["experiencia"],
-                                        placeholder="Ej: Tengo 5 años de experiencia cuidando perritos medianos, me encanta sacarlos a pasear al parque...")
-                zona_input = st.selectbox("Zona de servicio", config_actual["zonas"])
+                                        placeholder="Ej: Cuento con certificación en primeros auxilios para mascotas y amo jugar...")
+                
+                col_perf1, col_perf2 = st.columns(2)
+                with col_perf1:
+                    zona_input = st.selectbox("Zona de servicio", config_actual["zonas"])
+                with col_perf2:
+                    servicio_input = st.selectbox("Servicio principal que ofrezco", ["Hospedaje", "Guardería", "Paseos"])
 
                 unidad_tarifa = "USD" if st.session_state.tipo_moneda_vista == "USD" else config_actual["moneda"]
                 tarifa_input = st.number_input(f"Mi Tarifa sugerida por día ({unidad_tarifa})", min_value=1, value=20, step=5)
-                servicio_input = st.selectbox("Servicio principal que ofrezco", ["Hospedaje", "Guardería", "Paseos"])
 
                 guardar_perfil = st.form_submit_button("💾 Guardar y Actualizar Perfil")
                 if guardar_perfil:
@@ -520,30 +592,53 @@ else:
                             "servicio": servicio_input,
                             "completado": True
                         }
-                        st.success("🎉 ¡Tu información de Cuidador se actualizó con éxito en el sistema!")
+                        st.success("🎉 ¡Tu información de Perfil de Cuidador ha sido actualizada!")
 
+            # Vista previa estética de la tarjeta de presentación
             if st.session_state.info_cuidador["completado"]:
-                st.markdown("#### 📇 Vista Previa de tu Tarjeta de Presentación")
+                st.markdown("#### 📇 Vista Previa de tu Tarjeta Pública")
                 precio_formateado = formatear_precio(st.session_state.info_cuidador["tarifa"])
                 st.markdown(f"""
                 <div class='card card-cuidador'>
                     <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {st.session_state.usuario_nombre} (Tú)</h3>
-                    <p style='margin: 5px 0;'><b>📍 Zona:</b> {st.session_state.info_cuidador['zona']} | <b>🛠️ Servicio:</b> {st.session_state.info_cuidador['servicio']}</p>
+                    <p style='margin: 5px 0;'><b>📍 Ubicación:</b> {st.session_state.info_cuidador['zona']} | <b>🛠️ Servicio:</b> {st.session_state.info_cuidador['servicio']}</p>
                     <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
                     <p style='margin: 10px 0; font-style: italic; color:#555;'>"{st.session_state.info_cuidador['experiencia']}"</p>
                 </div>
                 """, unsafe_allow_html=True)
 
+            # Historial de postulaciones realizadas por este cuidador
+            st.markdown("#### 📋 Mis Postulaciones Realizadas")
+            postulaciones_hechas = [
+                sol for sol in st.session_state.solicitudes
+                if st.session_state.usuario_nombre in sol["postulantes"]
+            ]
+
+            if len(postulaciones_hechas) == 0:
+                st.info("No has realizado ninguna postulación de cuidado todavía.")
+            else:
+                for sol in postulaciones_hechas:
+                    est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
+                    st.markdown(f"""
+                    <div style='background-color: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d4edda; box-shadow: 0 4px 10px rgba(0,0,0,0.02);'>
+                        <div style='display: flex; justify-content: space-between; align-items: center;'>
+                            <strong>🐶 Solicitud de {sol['propietario']} ({sol['mascota']})</strong>
+                            <span class='badge {est_clase}'>{sol['estatus']}</span>
+                        </div>
+                        <p style='margin: 5px 0 0 0; font-size: 0.9rem; color: #666;'><b>📅 Fechas:</b> {sol['fechas']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
         with tab2:
             st.markdown("### 🔎 Solicitudes de Cuidado Activas")
-            st.write(f"Estos dueños de mascotas en **{st.session_state.pais_seleccionado}** necesitan tu ayuda urgentemente:")
-            
+            st.write(f"Dueños de mascotas en **{st.session_state.pais_seleccionado}** que buscan tu ayuda:")
+
             if len(st.session_state.solicitudes) == 0:
                 st.info("🌈 No hay anuncios pendientes en este momento.")
             else:
                 for idx, sol in enumerate(st.session_state.solicitudes):
                     est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
-                    
+
                     st.markdown(f"""
                     <div class='card'>
                         <div style='display: flex; justify-content: space-between; align-items: center;'>
@@ -556,15 +651,14 @@ else:
                     </div>
                     """, unsafe_allow_html=True)
 
-                    # Control de postulaciones dinámicas del cuidador conectado
                     ya_postulado = st.session_state.usuario_nombre in sol["postulantes"]
-                    
+
                     if sol["estatus"] != "Pendiente":
                         st.write(f"🔒 *Esta solicitud ya está cerrada (Estado: {sol['estatus']})*.")
                     elif ya_postulado:
-                        st.info("⏳ Ya te has postulado a este anuncio. Esperando aprobación del dueño de la mascota.")
+                        st.info("⏳ Ya te has postulado a este anuncio. Esperando la respuesta del dueño.")
                     else:
                         if st.button(f"🤝 Postularme para cuidar a {sol['mascota']}", key=f"btn_cuidador_{idx}"):
                             sol["postulantes"].append(st.session_state.usuario_nombre)
-                            st.success(f"🎉 ¡Excelente! Te has postulado para cuidar a {sol['mascota']}. Se notificó a {sol['propietario']}.")
+                            st.success(f"🎉 ¡Te has postulado con éxito! Se notificará al dueño de la mascota.")
                             st.rerun()
