@@ -56,10 +56,9 @@ st.markdown("""
         font-weight: 700;
     }
 
-    .aviso-prototipo {
-        background-color: #fff3cd;
+    .aviso-prototipo {        background-color: #fff3cd;
         color: #856404;
-        padding: 10px; 
+        padding: 10px;
         border-radius: 10px;
         border: 1px solid #ffeeba;
         text-align: center;
@@ -69,7 +68,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Banner de advertencia obligatorio según especificacion.md
+# Banner de advertencia obligatorio
 st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. No se realizan reservas reales.</div>', unsafe_allow_html=True)
 
 st.markdown('<h1 class="main-title">🐾 YokiPet</h1>', unsafe_allow_html=True)
@@ -132,7 +131,19 @@ if "tipo_perfil" not in st.session_state:
 if "pais_seleccionado" not in st.session_state:
     st.session_state.pais_seleccionado = "Costa Rica"
 if "tipo_moneda_vista" not in st.session_state:
-    st.session_state.tipo_moneda_vista = "Local" # Local o USD
+    st.session_state.tipo_moneda_vista = "Local"
+
+# Estructuras para Perfil del Dueño
+if "dueno_perfil" not in st.session_state:
+    st.session_state.dueno_perfil = {
+        "mascotas": [
+            {"nombre": "Toby", "especie": "Perro", "raza": "Golden Retriever", "detalles": "Muy amigable, le gustan los paseos cortos."},
+            {"nombre": "Félix", "especie": "Gato", "raza": "Mestizo", "detalles": "Independiente, asustadizo."}
+        ],
+        "metodo_pago": "Visa terminado en *4321 (Ficticio)",
+        "direccion": "",
+        "telefono_contacto": ""
+    }
 
 if "info_cuidador" not in st.session_state:
     st.session_state.info_cuidador = {
@@ -161,7 +172,6 @@ if "solicitudes" not in st.session_state:
         }
     ]
 
-# Catálogo original base indexado en USD para conversión consistente en cada país
 cuidadores_base_db = [
     {"nombre": "Lucía Madrigal", "servicio": "Hospedaje", "zona_index": 0, "tarifa_usd": 20.0, "especie": "Perro", "tamaño": "Todos"},
     {"nombre": "Andrés Fonseca", "servicio": "Paseos", "zona_index": 1, "tarifa_usd": 10.0, "especie": "Perro", "tamaño": "Mediano"},
@@ -176,14 +186,14 @@ PASSWORD_CORRECTA = "yoki123"
 if not st.session_state.sesion_iniciada:
     st.markdown("### 🔑 Ingreso Seguro a tu Cuenta YokiPet")
     st.write("Por favor introduce tu información, país y la contraseña demo `yoki123`.")
-    
+
     with st.form("login_seguro"):
         nombre_input = st.text_input("Tu Nombre Completo")
         pais_input = st.selectbox("País del servicio", list(PAISES_CONFIG.keys()))
         perfil_seleccionado = st.selectbox("Selecciona tu perfil de acceso", ["Dueño de Mascota", "Cuidador de Mascota"])
         password_input = st.text_input("Contraseña de seguridad", type="password")
         login_btn = st.form_submit_button("Iniciar sesión")
-        
+
         if login_btn:
             if nombre_input.strip() == "":
                 st.error("❌ Por favor, ingresa tu nombre.")
@@ -193,16 +203,13 @@ if not st.session_state.sesion_iniciada:
                 st.session_state.usuario_nombre = nombre_input
                 st.session_state.tipo_perfil = perfil_seleccionado
                 st.session_state.pais_seleccionado = pais_input
-                # Configurar zona por defecto según país seleccionado
                 st.session_state.info_cuidador["zona"] = PAISES_CONFIG[pais_input]["zonas"][0]
                 st.session_state.sesion_iniciada = True
                 st.success("¡Acceso concedido exitosamente!")
                 st.rerun()
 else:
-    # Datos de configuración del país seleccionado
     config_actual = PAISES_CONFIG[st.session_state.pais_seleccionado]
-    
-    # Cabecera de usuario con logout y selectores globales de moneda
+
     col_usr, col_mon, col_logout = st.columns([2, 1.5, 1])
     with col_usr:
         st.info(f"👤 **{st.session_state.usuario_nombre}** | {st.session_state.pais_seleccionado} ({st.session_state.tipo_perfil})")
@@ -216,7 +223,6 @@ else:
             st.session_state.info_cuidador["completado"] = False
             st.rerun()
 
-    # Función de formateo dinámico
     def formatear_precio(tarifa_usd):
         if st.session_state.tipo_moneda_vista == "USD":
             return f"${tarifa_usd:.2f} USD"
@@ -228,16 +234,36 @@ else:
     # 6. DIRECCIONAMIENTO INTELIGENTE SEGÚN PERFIL
     # -----------------------------------------------------
     if st.session_state.tipo_perfil == "Dueño de Mascota":
-        tab1, tab2 = st.tabs(["🙋‍♂️ Publicar Solicitud de Cuidado", "🔎 Buscar Cuidador con IA"])
-        
+        tab1, tab2, tab3 = st.tabs(["🙋‍♂️ Publicar Solicitud", "🔎 Buscar Cuidador con IA", "⚙️ Mi Perfil de Dueño"])
+
         with tab1:
             st.header("Publicar Solicitud de Cuidado")
             st.write(f"Completa el formulario para publicar tu solicitud en **{st.session_state.pais_seleccionado}**.")
 
+            # Selección o registro rápido de mascotas precargadas
+            lista_mascotas = st.session_state.dueno_perfil["mascotas"]
+            
+            if len(lista_mascotas) == 0:
+                st.warning("⚠️ No tienes mascotas registradas. Ve a la pestaña 'Mi Perfil de Dueño' para agregar tus mascotas.")
+                pet_names = ["Escribir manualmente"]
+            else:
+                pet_names = [pet["nombre"] for pet in lista_mascotas] + ["Otra mascota"]
+
+            mascota_seleccionada = st.selectbox("Seleccionar mascota para la solicitud", pet_names)
+
             with st.form("solicitud_form", clear_on_submit=True):
                 nombre_dueño = st.text_input("Nombre del dueño", value=st.session_state.usuario_nombre, disabled=True)
-                nombre_mascota = st.text_input("Nombre de tu mascota")
-                raza_mascota = st.text_input("Especie / Raza (ej: Gato Siamés, Perro Poodle)")
+                
+                # Rellenado automático si se elige una mascota registrada
+                if mascota_seleccionada != "Otra mascota" and mascota_seleccionada != "Escribir manualmente" and len(lista_mascotas) > 0:
+                    datos_pet = next((item for item in lista_mascotas if item["nombre"] == mascota_seleccionada), None)
+                    nombre_mascota = st.text_input("Nombre de tu mascota", value=datos_pet["nombre"], disabled=True)
+                    raza_mascota = st.text_input("Especie / Raza", value=f"{datos_pet['especie']} ({datos_pet['raza']})", disabled=True)
+                    detalles_def = datos_pet["detalles"]
+                else:
+                    nombre_mascota = st.text_input("Nombre de tu mascota")
+                    raza_mascota = st.text_input("Especie / Raza (ej: Gato Siamés, Perro Poodle)")
+                    detalles_def = ""
 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -245,7 +271,7 @@ else:
                 with col2:
                     fecha_fin = st.date_input("Hasta", min_value=datetime.today())
 
-                detalles = st.text_area("Indicaciones o cuidados especiales")
+                detalles = st.text_area("Indicaciones o cuidados especiales", value=detalles_def)
                 submit_button = st.form_submit_button("🚀 Publicar Anuncio de Cuidado")
 
                 if submit_button:
@@ -270,15 +296,12 @@ else:
             b_servicio = st.selectbox("Servicio requerido", ["Hospedaje", "Guardería", "Paseos"])
             b_zona = st.selectbox("Ubicación / Zona de servicio", config_actual["zonas"])
             b_especie = st.selectbox("Especie de mascota", ["Perro", "Gato"])
-            
-            # Convertir presupuesto ingresado a USD para un filtrado consistente
+
             moneda_display = "USD" if st.session_state.tipo_moneda_vista == "USD" else config_actual["moneda"]
             b_presupuesto = st.number_input(f"Presupuesto máximo ({moneda_display})", min_value=1, value=50, step=5)
-            
             presupuesto_usd = b_presupuesto if st.session_state.tipo_moneda_vista == "USD" else (b_presupuesto / config_actual["cambio_usd"])
 
             if st.button("Buscar Cuidador ideal"):
-                # Recrear catálogo dinámico según zonas del país
                 cat_local = []
                 for i, c in enumerate(cuidadores_base_db):
                     c_copia = c.copy()
@@ -313,23 +336,97 @@ else:
                 else:
                     st.error("😔 No se encontraron cuidadores en el catálogo que coincidan exactamente con tus criterios.")
 
+        with tab3:
+            st.header("⚙️ Mi Perfil de Dueño de Mascotas (Mockup)")
+            
+            # Sub-sección 1: Información de perfil general ficticia
+            st.subheader("Información General")
+            with st.form("dueño_info_form"):
+                dir_input = st.text_input("Mi Dirección de Residencia", value=st.session_state.dueno_perfil["direccion"], placeholder="Ej: Barrio Amón, San José")
+                tel_input = st.text_input("Número de Teléfono", value=st.session_state.dueno_perfil["telefono_contacto"], placeholder="Ej: +506 8888-8888")
+                pago_input = st.selectbox("Método de Pago Preferido", ["Visa terminado en *4321 (Ficticio)", "Mastercard terminado en *9876 (Ficticio)", "YokiPay Wallet"])
+                
+                guardar_perfil_dueño = st.form_submit_button("Guardar Información de Perfil")
+                if guardar_perfil_dueño:
+                    st.session_state.dueno_perfil["direccion"] = dir_input
+                    st.session_state.dueno_perfil["telefono_contacto"] = tel_input
+                    st.session_state.dueno_perfil["metodo_pago"] = pago_input
+                    st.success("✅ ¡Información de perfil actualizada exitosamente!")
+
+            # Sub-sección 2: Mis Mascotas Registradas (Agregar / Eliminar)
+            st.subheader("🐾 Mis Mascotas Registradas")
+            
+            if len(st.session_state.dueno_perfil["mascotas"]) == 0:
+                st.info("Aún no tienes mascotas registradas. Agrega una abajo.")
+            else:
+                for idx, pet in enumerate(st.session_state.dueno_perfil["mascotas"]):
+                    col_pet_info, col_pet_del = st.columns([4, 1])
+                    with col_pet_info:
+                        st.write(f"**{pet['nombre']}** ({pet['especie']}) - *{pet['raza']}* | {pet['detalles']}")
+                    with col_pet_del:
+                        if st.button("🗑️", key=f"del_pet_{idx}"):
+                            st.session_state.dueno_perfil["mascotas"].pop(idx)
+                            st.rerun()
+
+            # Formulario para agregar una nueva mascota
+            st.markdown("#### Agregar nueva mascota")
+            with st.form("add_mascota_form", clear_on_submit=True):
+                n_nombre = st.text_input("Nombre")
+                n_especie = st.selectbox("Especie", ["Perro", "Gato", "Ave", "Hámster", "Otro"])
+                n_raza = st.text_input("Raza o descripción física")
+                n_detalles = st.text_area("Comportamiento o cuidados particulares")
+                
+                add_btn = st.form_submit_button("➕ Registrar Mascota")
+                if add_btn:
+                    if n_nombre.strip() == "":
+                        st.error("Por favor introduce un nombre para tu mascota.")
+                    else:
+                        nueva_pet = {
+                            "nombre": n_nombre,
+                            "especie": n_especie,
+                            "raza": n_raza,
+                            "detalles": n_detalles
+                        }
+                        st.session_state.dueno_perfil["mascotas"].append(nueva_pet)
+                        st.success(f"🎉 ¡{n_nombre} ha sido agregada a tu perfil de manera segura!")
+                        st.rerun()
+
+            # Sub-sección 3: Historial de mis publicaciones realizadas
+            st.subheader("📋 Mis Publicaciones Realizadas")
+            mis_solicitudes = [
+                sol for sol in st.session_state.solicitudes
+                if sol["propietario"] == st.session_state.usuario_nombre
+            ]
+            
+            if len(mis_solicitudes) == 0:
+                st.info("No has publicado ningún anuncio de cuidado activo en esta sesión.")
+            else:
+                for idx_sol, sol in enumerate(mis_solicitudes):
+                    st.markdown(f"""
+                    <div style='background-color: #f1f8e9; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #81c784;'>
+                        <strong>🐶 {sol['mascota']} ({sol['raza']})</strong><br>
+                        📅 Fechas: {sol['fechas']}<br>
+                        📝 Notas: {sol['detalles']}
+                    </div>
+                    """, unsafe_allow_html=True)
+
     elif st.session_state.tipo_perfil == "Cuidador de Mascota":
         tab1, tab2 = st.tabs(["🏡 Mi Perfil de Cuidadora", "🔎 Solicitudes de Dueños Activas"])
-        
+
         with tab1:
             st.header("⚙️ Mi Perfil de Cuidador Profesional")
             st.write(f"Completa y mantén actualizada tu información de servicio para el mercado de **{st.session_state.pais_seleccionado}**.")
-            
+
             with st.form("perfil_cuidador"):
-                ex_input = st.text_area("Presentación, experiencia y cariño que ofreces", 
-                                        value=st.session_state.info_cuidador["experiencia"], 
+                ex_input = st.text_area("Presentación, experiencia y cariño que ofreces",
+                                        value=st.session_state.info_cuidador["experiencia"],
                                         placeholder="Ej: Tengo 5 años de experiencia cuidando perritos medianos, me encanta sacarlos a pasear al parque...")
                 zona_input = st.selectbox("Zona de servicio", config_actual["zonas"])
-                
+
                 unidad_tarifa = "USD" if st.session_state.tipo_moneda_vista == "USD" else config_actual["moneda"]
                 tarifa_input = st.number_input(f"Mi Tarifa sugerida por día ({unidad_tarifa})", min_value=1, value=20, step=5)
                 servicio_input = st.selectbox("Servicio principal que ofrezco", ["Hospedaje", "Guardería", "Paseos"])
-                
+
                 guardar_perfil = st.form_submit_button("💾 Guardar y Actualizar Perfil")
                 if guardar_perfil:
                     if ex_input.strip() == "":
