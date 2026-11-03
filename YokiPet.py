@@ -117,6 +117,13 @@ if "usuario_nombre" not in st.session_state:
     st.session_state.usuario_nombre = ""
 if "tipo_perfil" not in st.session_state:
     st.session_state.tipo_perfil = None
+if "info_cuidador" not in st.session_state:
+    st.session_state.info_cuidador = {
+        "experiencia": "Excelente trato y cariño para tus mascotas.",
+        "zona": "San José",
+        "tarifa": 10000,
+        "servicio": "Hospedaje"
+    }
 
 if "solicitudes" not in st.session_state:
     st.session_state.solicitudes = [
@@ -142,31 +149,38 @@ cuidadores_db = [
     {"nombre": "Valeria Chaves", "servicio": "Guardería", "zona": "Alajuela", "tarifa": 8000, "especie": "Gato", "tamaño": "Todos"}
 ]
 
+# Contraseña de simulación fija para el acceso del prototipo
+PASSWORD_CORRECTA = "yoki123"
+
 # -----------------------------------------------------
-# 4. FLUJO DE CONTROL DE ACCESO (LOGIN INICIAL SIMULADO)
+# 4. FLUJO DE CONTROL DE ACCESO CON CONTRASEÑA
 # -----------------------------------------------------
 if not st.session_state.sesion_iniciada:
-    st.markdown("### 🔑 Ingreso a tu Cuenta YokiPet")
-    st.write("Para iniciar, indícanos tu nombre y tipo de cuenta.")
+    st.markdown("### 🔑 Ingreso Seguro a tu Cuenta YokiPet")
+    st.write("Por favor introduce tu información y contraseña demo `yoki123`.")
     
-    with st.form("login_simulado"):
+    with st.form("login_seguro"):
         nombre_input = st.text_input("Tu Nombre Completo")
-        perfil_seleccionado = st.selectbox("Tipo de cuenta", ["Dueño de Mascota", "Cuidador de Mascota", "Invitado"])
-        login_btn = st.form_submit_button("Ingresar")
+        perfil_seleccionado = st.selectbox("Selecciona tu perfil de acceso", ["Dueño de Mascota", "Cuidador de Mascota"])
+        password_input = st.text_input("Contraseña de seguridad", type="password")
+        login_btn = st.form_submit_button("Iniciar sesión")
         
         if login_btn:
             if nombre_input.strip() == "":
-                st.error("❌ Por favor, ingresa tu nombre para continuar.")
+                st.error("❌ Por favor, ingresa tu nombre.")
+            elif password_input != PASSWORD_CORRECTA:
+                st.error("❌ Contraseña incorrecta. Utiliza la contraseña demo `yoki123`.")
             else:
                 st.session_state.usuario_nombre = nombre_input
                 st.session_state.tipo_perfil = perfil_seleccionado
                 st.session_state.sesion_iniciada = True
+                st.success("¡Acceso concedido exitosamente!")
                 st.rerun()
 else:
-    # Mostrar el perfil actual en la parte superior
+    # Cabecera de usuario con logout
     col_usr, col_logout = st.columns([3, 1])
     with col_usr:
-        st.info(f"👤 Conectado como: **{st.session_state.usuario_nombre}** ({st.session_state.tipo_perfil})")
+        st.info(f"👤 Conectado como: **{st.session_state.usuario_nombre}** | Rol: **{st.session_state.tipo_perfil}**")
     with col_logout:
         if st.button("Cerrar sesión"):
             st.session_state.sesion_iniciada = False
@@ -175,96 +189,119 @@ else:
             st.rerun()
 
     # -----------------------------------------------------
-    # 5. INTERFAZ PRINCIPAL CON PESTAÑAS
+    # 5. DIRECCIONAMIENTO INTELIGENTE SEGÚN PERFIL
     # -----------------------------------------------------
-    tab1, tab2, tab3 = st.tabs(["🙋‍♂️ Dueños", "🏡 Cuidadores", "🔎 Buscar Cuidador con IA"])
+    if st.session_state.tipo_perfil == "Dueño de Mascota":
+        tab1, tab2 = st.tabs(["🙋‍♂️ Publicar Solicitud de Cuidado", "🔎 Buscar Cuidador con IA"])
+        
+        with tab1:
+            st.header("Publicar Solicitud de Cuidado")
+            st.write("Completa el formulario para que un cuidador se postule de manera simulada.")
 
-    with tab1:
-        st.header("Publicar Solicitud de Cuidado")
-        st.write("Completa el formulario para que un cuidador se postule de manera simulada.")
+            with st.form("solicitud_form", clear_on_submit=True):
+                nombre_dueño = st.text_input("Nombre del dueño", value=st.session_state.usuario_nombre, disabled=True)
+                nombre_mascota = st.text_input("Nombre de tu mascota")
+                raza_mascota = st.text_input("Especie / Raza (ej: Gato Siamés, Perro Poodle)")
 
-        with st.form("solicitud_form", clear_on_submit=True):
-            nombre_dueño = st.text_input("Nombre del dueño", value=st.session_state.usuario_nombre, disabled=True)
-            nombre_mascota = st.text_input("Nombre de tu mascota")
-            raza_mascota = st.text_input("Especie / Raza (ej: Gato Siamés, Perro Poodle)")
+                col1, col2 = st.columns(2)
+                with col1:
+                    fecha_inicio = st.date_input("Desde", min_value=datetime.today())
+                with col2:
+                    fecha_fin = st.date_input("Hasta", min_value=datetime.today())
 
-            col1, col2 = st.columns(2)
-            with col1:
-                fecha_inicio = st.date_input("Desde", min_value=datetime.today())
-            with col2:
-                fecha_fin = st.date_input("Hasta", min_value=datetime.today())
+                detalles = st.text_area("Indicaciones o cuidados especiales")
+                submit_button = st.form_submit_button("🚀 Publicar Anuncio de Cuidado")
 
-            detalles = st.text_area("Indicaciones o cuidados especiales")
+                if submit_button:
+                    if nombre_mascota:
+                        nueva_solicitud = {
+                            "propietario": nombre_dueño,
+                            "mascota": nombre_mascota,
+                            "raza": raza_mascota if raza_mascota else "Especie indeterminada",
+                            "fechas": f"{fecha_inicio.strftime('%d/%m/%Y')} al {fecha_fin.strftime('%d/%m/%Y')}",
+                            "detalles": detalles
+                        }
+                        st.session_state.solicitudes.append(nueva_solicitud)
+                        st.balloons()
+                        st.success(f"¡Genial! Tu solicitud para cuidar a {nombre_mascota} ha sido publicada con éxito.")
+                    else:
+                        st.error("❌ Por favor, ingresa el nombre de tu mascota.")
 
-            submit_button = st.form_submit_button("🚀 Publicar Anuncio de Cuidado")
+        with tab2:
+            st.header("Buscador Inteligente de Cuidadores")
+            st.write("Filtra nuestro catálogo y deja que el asistente te recomiende las mejores opciones.")
 
-            if submit_button:
-                if nombre_mascota:
-                    nueva_solicitud = {
-                        "propietario": nombre_dueño,
-                        "mascota": nombre_mascota,
-                        "raza": raza_mascota if raza_mascota else "Especie indeterminada",
-                        "fechas": f"{fecha_inicio.strftime('%d/%m/%Y')} al {fecha_fin.strftime('%d/%m/%Y')}",
-                        "detalles": detalles
-                    }
-                    st.session_state.solicitudes.append(nueva_solicitud)
-                    st.balloons()
-                    st.success(f"¡Genial! El anuncio de {nombre_mascota} ya está disponible en la pestaña de cuidadores.")
+            b_servicio = st.selectbox("Servicio requerido", ["Hospedaje", "Guardería", "Paseos"])
+            b_zona = st.selectbox("Ubicación en Costa Rica", ["San José", "Heredia", "Alajuela"])
+            b_especie = st.selectbox("Especie de mascota", ["Perro", "Gato"])
+            b_presupuesto = st.number_input("Presupuesto máximo (₡)", min_value=1000, value=15000, step=1000)
+
+            if st.button("Buscar Cuidador ideal"):
+                encontrados = [
+                    c for c in cuidadores_db
+                    if c['servicio'] == b_servicio
+                    and c['zona'] == b_zona
+                    and c['especie'] == b_especie
+                    and c['tarifa'] <= b_presupuesto
+                ]
+
+                if encontrados:
+                    st.success(f"Se encontraron {len(encontrados)} opciones que coinciden exactamente con tus criterios.")
+                    info_mascota_busqueda = f"{b_especie} en la zona de {b_zona} para el servicio de {b_servicio}"
+                    explicacion = obtener_explicacion_asistente(encontrados, info_mascota_busqueda)
+
+                    st.markdown("### 🤖 Recomendación del Asistente YokiPet")
+                    st.info(explicacion)
+
+                    for cuid in encontrados:
+                        st.markdown(f"""
+                        <div class='card'>
+                            <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {cuid['nombre']}</h3>
+                            <p style='margin: 5px 0;'><b>📍 Zona:</b> {cuid['zona']} | <b>🛠️ Servicio:</b> {cuid['servicio']}</p>
+                            <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> ₡{cuid['tarifa']:,}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
                 else:
-                    st.error("❌ Por favor, ingresa el nombre de tu mascota.")
+                    st.error("😔 No se encontraron cuidadores en el catálogo que coincidan exactamente con tus criterios.")
 
-    with tab2:
-        st.markdown("### 🔎 Solicitudes de Cuidado Activas")
-        if len(st.session_state.solicitudes) == 0:
-            st.info("🌈 No hay anuncios pendientes en este momento.")
-        else:
-            for idx, sol in enumerate(st.session_state.solicitudes):
-                st.markdown(f"""
-                <div class='card'>
-                    <h3 style='margin-top:0; color:#ff7e5f; font-family: Fredoka;'>🐶 {sol['mascota']} ({sol['raza']})</h3>
-                    <p style='margin: 5px 0;'><b>👤 Propietario:</b> {sol['propietario']}</p>
-                    <p style='margin: 5px 0;'><b>📅 Fechas solicitadas:</b> {sol['fechas']}</p>
-                    <p style='margin: 10px 0; font-style: italic; color:#555;'>" {sol['detalles']} "</p>
-                </div>
-                """, unsafe_allow_html=True)
+    elif st.session_state.tipo_perfil == "Cuidador de Mascota":
+        tab1, tab2 = st.tabs(["🏡 Mi Información de Cuidador", "🔎 Solicitudes de Cuidado Activas"])
+        
+        with tab1:
+            st.header("⚙️ Mi Perfil de Cuidador de Confianza")
+            st.write("Aquí puedes definir tu tarifa diaria y tu cobertura para aparecer en las búsquedas.")
+            
+            with st.form("perfil_cuidador"):
+                ex_input = st.text_area("Presentación / Experiencia profesional", value=st.session_state.info_cuidador["experiencia"])
+                zona_input = st.selectbox("Zona de servicio", ["San José", "Heredia", "Alajuela"], index=["San José", "Heredia", "Alajuela"].index(st.session_state.info_cuidador["zona"]))
+                tarifa_input = st.number_input("Tarifa por día (₡)", min_value=1000, value=st.session_state.info_cuidador["tarifa"], step=500)
+                servicio_input = st.selectbox("Servicio principal", ["Hospedaje", "Guardería", "Paseos"], index=["Hospedaje", "Guardería", "Paseos"].index(st.session_state.info_cuidador["servicio"]))
+                
+                guardar_perfil = st.form_submit_button("Guardar Perfil")
+                if guardar_perfil:
+                    st.session_state.info_cuidador = {
+                        "experiencia": ex_input,
+                        "zona": zona_input,
+                        "tarifa": tarifa_input,
+                        "servicio": servicio_input
+                    }
+                    st.success("🎉 ¡Tu información de Cuidador se actualizó con éxito!")
 
-                if st.button(f"🤝 Postularme para cuidar a {sol['mascota']}", key=f"btn_{idx}"):
-                    st.success(f"🎉 ¡Increíble! Te has postulado para cuidar a {sol['mascota']}. Se ha enviado una respuesta de simulación a {sol['propietario']}.")
-
-    with tab3:
-        st.header("Buscador Inteligente de Cuidadores")
-        st.write("Filtra deterministamente nuestro catálogo y deja que el asistente te guíe.")
-
-        b_servicio = st.selectbox("Servicio requerido", ["Hospedaje", "Guardería", "Paseos"])
-        b_zona = st.selectbox("Ubicación en Costa Rica", ["San José", "Heredia", "Alajuela"])
-        b_especie = st.selectbox("Especie de mascota", ["Perro", "Gato"])
-        b_presupuesto = st.number_input("Presupuesto máximo (₡)", min_value=1000, value=15000, step=1000)
-
-        if st.button("Buscar Cuidador ideal"):
-            encontrados = [
-                c for c in cuidadores_db
-                if c['servicio'] == b_servicio
-                and c['zona'] == b_zona
-                and c['especie'] == b_especie
-                and c['tarifa'] <= b_presupuesto
-            ]
-
-            if encontrados:
-                st.success(f"Se encontraron {len(encontrados)} opciones que coinciden exactamente con tus criterios.")
-
-                info_mascota_busqueda = f"{b_especie} en la zona de {b_zona} para el servicio de {b_servicio}"
-                explicacion = obtener_explicacion_asistente(encontrados, info_mascota_busqueda)
-
-                st.markdown("### 🤖 Recomendación del Asistente YokiPet")
-                st.info(explicacion)
-
-                for cuid in encontrados:
+        with tab2:
+            st.markdown("### 🔎 Solicitudes de Cuidado Activas")
+            st.write("Siguiente lista de dueños que necesitan tu atención urgente:")
+            if len(st.session_state.solicitudes) == 0:
+                st.info("🌈 No hay anuncios pendientes en este momento.")
+            else:
+                for idx, sol in enumerate(st.session_state.solicitudes):
                     st.markdown(f"""
                     <div class='card'>
-                        <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {cuid['nombre']}</h3>
-                        <p style='margin: 5px 0;'><b>📍 Zona:</b> {cuid['zona']} | <b>🛠️ Servicio:</b> {cuid['servicio']}</p>
-                        <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> ₡{cuid['tarifa']:,}</p>
+                        <h3 style='margin-top:0; color:#ff7e5f; font-family: Fredoka;'>🐶 {sol['mascota']} ({sol['raza']})</h3>
+                        <p style='margin: 5px 0;'><b>👤 Propietario:</b> {sol['propietario']}</p>
+                        <p style='margin: 5px 0;'><b>📅 Fechas solicitadas:</b> {sol['fechas']}</p>
+                        <p style='margin: 10px 0; font-style: italic; color:#555;'>" {sol['detalles']} "</p>
                     </div>
                     """, unsafe_allow_html=True)
-            else:
-                st.error("😔 No se encontraron cuidadores en el catálogo que coincidan exactamente con tus criterios. Intenta flexibilizar el presupuesto o cambiar de zona.")
+
+                    if st.button(f"🤝 Postularme para cuidar a {sol['mascota']}", key=f"btn_cuidador_{idx}"):
+                        st.success(f"🎉 ¡Excelente! Te has postulado para cuidar a {sol['mascota']}. Se envió tu contacto a {sol['propietario']}.")
