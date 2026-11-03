@@ -52,7 +52,7 @@ st.markdown("""
     /* Tarjetas con efecto 3D sutil y sombras */
     .card {
         background-color: #ffffff;
-        padding: 24px; 
+        padding: 24px;
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(255, 126, 95, 0.08);
         border-left: 6px solid #ff7e5f;
@@ -123,7 +123,7 @@ st.markdown("""
         animation: flotar 15s linear infinite;
     }
 
-    @keyframes flotar {
+    @keyframes flotar { 
         0% {
             transform: translateY(0) rotate(0deg);
             opacity: 0.25;
@@ -461,7 +461,7 @@ else:
                 for i, c in enumerate(cuidadores_base_db):
                     c_copia = c.copy()
                     idx_zona = c["zona_index"] % len(config_actual["zonas"])
-                    c_copia["zona"] = config_actual["zonas"|][idx_zona]
+                    c_copia["zona"] = config_actual["zonas"][idx_zona]
                     cat_local.append(c_copia)
 
                 encontrados = [
