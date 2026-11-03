@@ -1,3 +1,4 @@
+%%writefile YokiPet.py
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -10,18 +11,18 @@ st.set_page_config(page_title="YokiPet - Cuidado de Mascotas", page_icon="🐾",
 
 st.markdown("""
 <style>
-    @import url(\'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap\');
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
 
     .main {
         background-color: #fdfaf6;
-        font-family: \'Quicksand\', sans-serif;
+        font-family: 'Quicksand', sans-serif;
         position: relative;
         overflow-x: hidden;
     }
 
     /* Título tradicional: Negro y Naranja con huellitas */
     .titulo-tradicional {
-        font-family: \'Fredoka\', sans-serif;
+        font-family: 'Fredoka', sans-serif;
         text-align: center;
         font-size: 3.5rem;
         font-weight: 700;
@@ -36,7 +37,7 @@ st.markdown("""
     }
 
     .creative-slogan {
-        font-family: \'Fredoka\', sans-serif;
+        font-family: 'Fredoka', sans-serif;
         color: #4a4a4a;
         font-size: 1.3rem;
         text-align: center;
@@ -52,7 +53,7 @@ st.markdown("""
     /* Tarjetas con efecto 3D sutil y sombras */
     .card {
         background-color: #ffffff;
-        padding: 24px;
+        padding: 24px; 
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(255, 126, 95, 0.08);
         border-left: 6px solid #ff7e5f;
@@ -124,7 +125,7 @@ st.markdown("""
     }
 
     @keyframes flotar {
-        0% { 
+        0% {
             transform: translateY(0) rotate(0deg);
             opacity: 0.25;
         }
@@ -158,11 +159,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Banner de advertencia obligatorio
-st.markdown(\'<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. No se realizan reservas reales.</div>\', unsafe_allow_html=True)
+st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. No se realizan reservas reales.</div>', unsafe_allow_html=True)
 
 # Título e Identidad tradicional: Negro y Naranja con huellas acompañándolo
-st.markdown(\'<h1 class="titulo-tradicional"><span class="titulo-yoki">🐾 Yoki</span><span class="titulo-pet">Pet 🐾</span></h1>\', unsafe_allow_html=True)
-st.markdown(\'<div class="creative-slogan">Encuentra amor, seguridad y compañía confiable para tus mascotas preferidas</div>\', unsafe_allow_html=True)
+st.markdown('<h1 class="titulo-tradicional"><span class="titulo-yoki">🐾 Yoki</span><span class="titulo-pet">Pet 🐾</span></h1>', unsafe_allow_html=True)
+st.markdown('<div class="creative-slogan">Encuentra amor, seguridad y compañía confiable para tus mascotas preferidas</div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------
 # 2. CONFIGURACIÓN DE SECRETOS Y PIEZA DE IA (GEMINI)
@@ -377,7 +378,7 @@ else:
             return f"${tarifa_usd:.2f} USD"
         else:
             valor_local = tarifa_usd * config_actual["cambio_usd"]
-            return f" {config_actual[\'simbolo\']}{valor_local:,.0f} {config_actual[\'moneda\']}"
+            return f" {config_actual['simbolo']}{valor_local:,.0f} {config_actual['moneda']}"
 
     # -----------------------------------------------------
     # 6. PANEL DE YOKIPARENTS (DUEÑOS)
@@ -392,7 +393,7 @@ else:
             lista_mascotas = st.session_state.dueno_perfil["mascotas"]
 
             if len(lista_mascotas) == 0:
-                st.warning("⚠️ No tienes mascotas registradas. Ve a \'Mi Perfil YokiParent\' para agregarlas.")
+                st.warning("⚠️ No tienes mascotas registradas. Ve a 'Mi Perfil YokiParent' para agregarlas.")
                 lista_opciones_m = []
             else:
                 lista_opciones_m = [pet["nombre"] for pet in lista_mascotas]
@@ -410,8 +411,8 @@ else:
                     for nombre_sel in mascotas_seleccionadas:
                         pet_obj = next((item for item in lista_mascotas if item["nombre"] == nombre_sel), None)
                         if pet_obj:
-                            detalles_partes.append(f"- {pet_obj[\'nombre\']}: {pet_obj[\'detalles\']}")
-                            razas_partes.append(f"{pet_obj[\'nombre\']} ({pet_obj[\'especie\']} {pet_obj[\'raza\']})")
+                            detalles_partes.append(f"- {pet_obj['nombre']}: {pet_obj['detalles']}")
+                            razas_partes.append(f"{pet_obj['nombre']} ({pet_obj['especie']} {pet_obj['raza']})")
                     detalles_sugeridos = "\n".join(detalles_partes)
                     razas_sugeridas = ", ".join(razas_partes)
 
@@ -433,14 +434,14 @@ else:
                             "propietario": nombre_dueño,
                             "mascotas": mascotas_seleccionadas,
                             "raza": raza_mascota_disp,
-                            "fechas": f" {fecha_inicio.strftime(\'%d/%m/%Y\')} al {fecha_fin.strftime(\'%d/%m/%Y\')}",
+                            "fechas": f" {fecha_inicio.strftime('%d/%m/%Y')} al {fecha_fin.strftime('%d/%m/%Y')}",
                             "detalles": detalles,
                             "estatus": "Pendiente",
                             "postulantes": []
                         }
                         st.session_state.solicitudes.append(nueva_solicitud)
                         st.balloons()
-                        st.success(f"¡Genial! Tu solicitud para cuidar a {\', \'.join(mascotas_seleccionadas)} ha sido publicada con éxito.")
+                        st.success(f"¡Genial! Tu solicitud para cuidar a {', '.join(mascotas_seleccionadas)} ha sido publicada con éxito.")
                     else:
                         st.error("❌ Por favor, selecciona al menos una mascota para publicar el anuncio.")
 
@@ -461,34 +462,34 @@ else:
                 for i, c in enumerate(cuidadores_base_db):
                     c_copia = c.copy()
                     idx_zona = c["zona_index"] % len(config_actual["zonas"])
-                    c_copia["zona"] = config_actual["zonas"][idx_zona]
+                    c_copia["zona"] = config_actual["zonas"|][idx_zona]
                     cat_local.append(c_copia)
 
                 encontrados = [
                     c for c in cat_local
-                    if c[\'servicio\'] == b_servicio
-                    and c[\'zona\'] == b_zona
-                    and (b_especie in c[\'especies\'] or \'Todos\' in c.get(\'especies\', []) or b_especie == \'Otro\')
-                    and c[\'tarifa_usd\'] <= presupuesto_usd
+                    if c['servicio'] == b_servicio
+                    and c['zona'] == b_zona
+                    and (b_especie in c['especies'] or 'Todos' in c.get('especies', []) or b_especie == 'Otro')
+                    and c['tarifa_usd'] <= presupuesto_usd
                 ]
 
                 if encontrados:
                     st.success(f"Se encontraron {len(encontrados)} opciones que coinciden exactamente con tus criterios.")
                     info_mascota_busqueda = f"{b_especie} en la zona de {b_zona} para el servicio de {b_servicio}"
-                    explicacion = obtener_explicacion_asistente(encontrados, info_mascota_busqueda, config_actual[\'simbolo\'] if st.session_state.tipo_moneda_vista == \'Local\' else \'$\')
+                    explicacion = obtener_explicacion_asistente(encontrados, info_mascota_busqueda, config_actual['simbolo'] if st.session_state.tipo_moneda_vista == 'Local' else '$')
 
                     st.markdown("### 🤖 Recomendación del Asistente YokiPet")
                     st.info(explicacion)
 
                     for cuid in encontrados:
-                        precio_formateado = formatear_precio(cuid[\'tarifa_usd\'])
-                        especies_permitidas = ", ".join(cuid.get(\'especies\', []))
+                        precio_formateado = formatear_precio(cuid['tarifa_usd'])
+                        especies_permitidas = ", ".join(cuid.get('especies', []))
                         st.markdown(f"""
-                        <div class=\'card\'>
-                            <h3 style=\'margin-top:0; color:#2e7d32; font-family: Fredoka;\'>⭐ {cuid[\'nombre\']}</h3>
-                            <p style=\'margin: 5px 0;\'><b>📍 Zona:</b> {cuid[\'zona\']} | <b>🛠️ Servicio:</b> {cuid[\'servicio\']}</p>
-                            <p style=\'margin: 5px 0;\'><b>🐾 Especies que cuida:</b> {especies_permitidas}</p>
-                            <p style=\'margin: 5px 0;\'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
+                        <div class='card'>
+                            <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {cuid['nombre']}</h3>
+                            <p style='margin: 5px 0;'><b>📍 Zona:</b> {cuid['zona']} | <b>🛠️ Servicio:</b> {cuid['servicio']}</p>
+                            <p style='margin: 5px 0;'><b>🐾 Especies que cuida:</b> {especies_permitidas}</p>
+                            <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
                         </div>
                         """, unsafe_allow_html=True)
                 else:
@@ -517,8 +518,8 @@ else:
                 for idx, pet in enumerate(st.session_state.dueno_perfil["mascotas"]):
                     col_pet_info, col_pet_del = st.columns([4, 1])
                     with col_pet_info:
-                        emoji = "🐠" if pet[\'especie\'] == \'Pez\' else ("🐶" if pet[\'especie\'] == \'Perro\' else "🐱")
-                        st.write(f"{emoji} **{pet[\'nombre\']}** ({pet[\'especie\']}) - *{pet[\'raza\']}* | {pet[\'detalles\']}")
+                        emoji = "🐠" if pet['especie'] == 'Pez' else ("🐶" if pet['especie'] == 'Perro' else "🐱")
+                        st.write(f"{emoji} **{pet['nombre']}** ({pet['especie']}) - *{pet['raza']}* | {pet['detalles']}")
                     with col_pet_del:
                         if st.button("🗑️", key=f"del_pet_{idx}"):
                             st.session_state.dueno_perfil["mascotas"].pop(idx)
@@ -557,18 +558,18 @@ else:
             else:
                 for idx_sol, sol in enumerate(st.session_state.solicitudes):
                     if sol["propietario"] == st.session_state.usuario_nombre:
-                        est_clase = "badge-pendiente" if sol[\'estatus\'] == \'Pendiente\' else ("badge-aprobado" if sol[\'estatus\'] == \'Aprobado\' else "badge-rechazado")
+                        est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
                         nombres_m = ", ".join(sol.get("mascotas", []))
                         st.markdown(f"""
-                        <div style=\'background-color: #ffffff; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #ff7e5f; box-shadow: 0 4px 10px rgba(0,0,0,0.02);\'>
-                            <div style=\'display: flex; justify-content: space-between; align-items: center;\'>
-                                <strong style=\'font-size: 1.15rem; color: #ff7e5f;\'>🐾 Mascotas: {nombres_m}</strong>
-                                <span class=\'badge {est_clase}\'}>{sol[\'estatus\']}</span>
+                        <div style='background-color: #ffffff; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #ff7e5f; box-shadow: 0 4px 10px rgba(0,0,0,0.02);'>
+                            <div style='display: flex; justify-content: space-between; align-items: center;'>
+                                <strong style='font-size: 1.15rem; color: #ff7e5f;'>🐾 Mascotas: {nombres_m}</strong>
+                                <span class='badge {est_clase}'>{sol['estatus']}</span>
                             </div>
-                            <div style=\'margin-top: 8px;\'>
-                                🏷️ <b>Detalles:</b> {sol[\'raza\']}<br>
-                                📅 <b>Fechas:</b> {sol[\'fechas\']}<br>
-                                📝 <b>Notas:</b> {sol[\'detalles\']}
+                            <div style='margin-top: 8px;'>
+                                🏷️ <b>Detalles:</b> {sol['raza']}<br>
+                                📅 <b>Fechas:</b> {sol['fechas']}<br>
+                                📝 <b>Notas:</b> {sol['detalles']}
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
@@ -581,12 +582,12 @@ else:
                                     with c1:
                                         st.write(f"🔹 **{postulante}**")
                                     with c2:
-                                        if st.button("✅ Aprobar", key=f"aprob_{sol[\'id\']}_{postulante}"):
+                                        if st.button("✅ Aprobar", key=f"aprob_{sol['id']}_{postulante}"):
                                             sol["estatus"] = "Aprobado"
                                             st.success(f"¡Has aprobado a {postulante}!")
                                             st.rerun()
                                     with c3:
-                                        if st.button("❌".encode(\'utf-8\').decode(\'utf-8\') + " Rechazar", key=f"rech_{sol[\'id\']}_{postulante}"):
+                                        if st.button("❌ Rechazar", key=f"rech_{sol['id']}_{postulante}"):
                                             sol["estatus"] = "Rechazado"
                                             st.warning(f"Has rechazado a {postulante}.")
                                             st.rerun()
@@ -649,12 +650,12 @@ else:
                 precio_formateado = formatear_precio(st.session_state.info_cuidador["tarifa"])
                 especies_preview = ", ".join(st.session_state.info_cuidador.get("especies_aceptadas", []))
                 st.markdown(f"""
-                <div class=\'card card-cuidador\'>
-                    <h3 style=\'margin-top:0; color:#2e7d32; font-family: Fredoka;\'>⭐ {st.session_state.usuario_nombre} (Tú)</h3>
-                    <p style=\'margin: 5px 0;\'><b>📍 Ubicación:</b> {st.session_state.info_cuidador[\'zona\']} | <b>🛠️ Servicio:</b> {st.session_state.info_cuidador[\'servicio\']}</p>
-                    <p style=\'margin: 5px 0;\'><b>🐾 Mascotas aceptadas:</b> {especies_preview}</p>
-                    <p style=\'margin: 5px 0;\'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
-                    <p style=\'margin: 10px 0; font-style: italic; color:#555;\'>"{st.session_state.info_cuidador[\'experiencia\']}"</p>
+                <div class='card card-cuidador'>
+                    <h3 style='margin-top:0; color:#2e7d32; font-family: Fredoka;'>⭐ {st.session_state.usuario_nombre} (Tú)</h3>
+                    <p style='margin: 5px 0;'><b>📍 Ubicación:</b> {st.session_state.info_cuidador['zona']} | <b>🛠️ Servicio:</b> {st.session_state.info_cuidador['servicio']}</p>
+                    <p style='margin: 5px 0;'><b>🐾 Mascotas aceptadas:</b> {especies_preview}</p>
+                    <p style='margin: 5px 0;'><b>💰 Tarifa por día:</b> {precio_formateado}</p>
+                    <p style='margin: 10px 0; font-style: italic; color:#555;'>"{st.session_state.info_cuidador['experiencia']}"</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -669,15 +670,15 @@ else:
                 st.info("No has realizado ninguna postulación de cuidado todavía.")
             else:
                 for sol in postulaciones_hechas:
-                    est_clase = "badge-pendiente" if sol[\'estatus\'] == \'Pendiente\' else ("badge-aprobado" if sol[\'estatus\'] == \'Aprobado\' else "badge-rechazado")
+                    est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
                     nombres_m_sol = ", ".join(sol.get("mascotas", []))
                     st.markdown(f"""
-                    <div style=\'background-color: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d4edda; box-shadow: 0 4px 10px rgba(0,0,0,0.02);\'>
-                        <div style=\'display: flex; justify-content: space-between; align-items: center;\'>
-                            <strong>🐾 Solicitud de {sol[\'propietario\']} ({nombres_m_sol})</strong>
-                            <span class=\'badge {est_clase}\'}>{sol[\'estatus\']}</span>
+                    <div style='background-color: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d4edda; box-shadow: 0 4px 10px rgba(0,0,0,0.02);'>
+                        <div style='display: flex; justify-content: space-between; align-items: center;'>
+                            <strong>🐾 Solicitud de {sol['propietario']} ({nombres_m_sol})</strong>
+                            <span class='badge {est_clase}'>{sol['estatus']}</span>
                         </div>
-                        <p style=\'margin: 5px 0 0 0; font-size: 0.9rem; color: #666;\'><b>📅 Fechas:</b> {sol[\'fechas\']}</p>
+                        <p style='margin: 5px 0 0 0; font-size: 0.9rem; color: #666;'><b>📅 Fechas:</b> {sol['fechas']}</p>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -689,25 +690,25 @@ else:
                 st.info("🌈 No hay anuncios pendientes en este momento.")
             else:
                 for idx, sol in enumerate(st.session_state.solicitudes):
-                    est_clase = "badge-pendiente" if sol[\'estatus\'] == \'Pendiente\' else ("badge-aprobado" if sol[\'estatus\'] == \'Aprobado\' else "badge-rechazado")
+                    est_clase = "badge-pendiente" if sol['estatus'] == 'Pendiente' else ("badge-aprobado" if sol['estatus'] == 'Aprobado' else "badge-rechazado")
                     nombres_m_sol = ", ".join(sol.get("mascotas", []))
                     st.markdown(f"""
-                    <div class=\'card\'>
-                        <div style=\'display: flex; justify-content: space-between; align-items: center;\'>
-                            <h3 style=\'margin-top:0; color:#ff7e5f; font-family: Fredoka;\'>🐾 {nombres_m_sol}</h3>
-                            <span class=\'badge {est_clase}\'}>{sol[\'estatus\']}</span>
+                    <div class='card'>
+                        <div style='display: flex; justify-content: space-between; align-items: center;'>
+                            <h3 style='margin-top:0; color:#ff7e5f; font-family: Fredoka;'>🐾 {nombres_m_sol}</h3>
+                            <span class='badge {est_clase}'>{sol['estatus']}</span>
                         </div>
-                        <p style=\'margin: 5px 0;\'><b>👤 YokiParent:</b> {sol[\'propietario\']}</p>
-                        <p style=\'margin: 5px 0;\'><b>🏷️ Mascotas:</b> {sol[\'raza\']}</p>
-                        <p style=\'margin: 5px 0;\'><b>📅 Fechas solicitadas:</b> {sol[\'fechas\']}</p>
-                        <p style=\'margin: 10px 0; font-style: italic; color:#555;\'>" {sol[\'detalles\']} "</p>
+                        <p style='margin: 5px 0;'><b>👤 YokiParent:</b> {sol['propietario']}</p>
+                        <p style='margin: 5px 0;'><b>🏷️ Mascotas:</b> {sol['raza']}</p>
+                        <p style='margin: 5px 0;'><b>📅 Fechas solicitadas:</b> {sol['fechas']}</p>
+                        <p style='margin: 10px 0; font-style: italic; color:#555;'>" {sol['detalles']} "</p>
                     </div>
                     """, unsafe_allow_html=True)
 
                     ya_postulado = st.session_state.usuario_nombre in sol["postulantes"]
 
                     if sol["estatus"] != "Pendiente":
-                        st.write(f"🔒 *Esta solicitud ya está cerrada (Estado: {sol[\'estatus\']})*.")
+                        st.write(f"🔒 *Esta solicitud ya está cerrada (Estado: {sol['estatus']})*.")
                     elif ya_postulado:
                         st.info("⏳ Ya te has postulado a este anuncio. Esperando la respuesta del YokiParent.")
                     else:
