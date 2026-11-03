@@ -162,7 +162,7 @@ st.markdown('<div class="aviso-prototipo">⚠️ Prototipo con datos ficticios. 
 
 # Título e Identidad tradicional: Negro y Naranja con huellas acompañándolo
 st.markdown('<h1 class="titulo-tradicional"><span class="titulo-yoki">🐾 Yoki</span><span class="titulo-pet">Pet 🐾</span></h1>', unsafe_allow_html=True)
-st.markdown('<div class="creative-slogan">Encuentra amor, seguridad y compañía confiable para tus mascotas preferidas</div>', unsafe_allow_html=True)
+st.markdown('<div class="creative-slogan">¿Quién cuidará de tus peluditos? ¡YOKI!</div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------
 # 2. CONFIGURACIÓN DE SECRETOS Y PIEZA DE IA (GEMINI)
