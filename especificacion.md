@@ -1,9 +1,9 @@
 
 **Versión:** 0.1 — prototipo académico / demostración, no marketplace listo para operar.  
-**Idioma inicial:** español. **Mercado de referencia:** Costa Rica (ubicaciones ficticias).  
+**Idioma inicial:** español. **Mercado de referencia:** El usuario selecciona su país.  
 **Fuente de verdad:** este archivo define el alcance funcional; `AGENTS.md` define las reglas de implementación.
 
-> Objetivo: validar con datos ficticios que una persona puede encontrar un cuidador adecuado para su mascota y enviar una solicitud de reserva simulada. No se procesarán pagos ni se ofrecerá cuidado real mediante este prototipo.
+> Objetivo: validar con datos ficticios que una persona puede encontrar un cuidador adecuado para su mascota y enviar una solicitud de reserva simulada. No se procesarán pagos ni se ofrecerá cuidado real mediante este prototipo. Validar que un cuidador o proveedor de servicios de mascotas también pueda ingresar sus datos para ofrecer sus servicios.
 
 ## 1. Problema y usuario
 
@@ -14,7 +14,7 @@
 
 ## 2. Qué hace el producto (máximo tres funcionalidades principales)
 
-1. **Perfiles demostrativos:** visualizar perfiles de dueños, mascotas y cuidadores ficticios; permitir editar perfiles durante la sesión sin crear cuentas reales.
+1. **Perfiles demostrativos:** visualizar perfiles de dueños, mascotas y cuidadores ficticios; permitir editar perfiles durante la sesión y permite crear cuentas adicionales de prueba.
 2. **Búsqueda y recomendaciones:** filtrar cuidadores por servicio, zona, fechas, especie, tamaño de mascota y presupuesto; mostrar resultados ordenados con criterios deterministas y, si Gemini está disponible, una explicación en lenguaje sencillo.
 3. **Reservas simuladas:** enviar una solicitud para un cuidador y permitir aceptarla o rechazarla desde una vista demostrativa del cuidador; mostrar el estado sin cobros ni compromisos reales.
 
@@ -22,13 +22,19 @@
 
 | Entrada | Salida esperada | Ejemplo concreto |
 |---|---|---|
+| Usuario ingresa a la aplicación para utilizar los servicios. | La aplicación despliega la pantalla con información general del app con la pantalla de ingresar a la cuenta o crear una cuenta nueva. | 
+| El usuario ingresa su correo electrónico y contraseña. | La aplicación permite el ingreso al perfil del usuario y le solicita seleccionar si ingresa como cuidador o como dueño de mascota en caso de que se hubiera registrado para ambos al crear su cuenta. | 
+| Si el usuario selecciona Crear Cuenta | La aplicación solicita seleccionar si es un perfil de dueño o de proveedor. Para dueño despliega el formulario de inscripción con Nombre, Apellido, Zona de residencia, ingresar el perfil de sus mascotas con Nombre, Tipo de mascota, Raza, Edad y Anotaciones o cuidados especiales. Si es para proveedor, la aplicación despliega el formulario de Nombre, Apellidos, Servicios ofrecidos, Precios estimados, Tipo de especialidad, Perfil profesional calificado o Cuidador temporal, Años de experiencia con mascotas, y demás datos importantes como proveedor. |  
+| Usuario selecciona la zona o país donde necesita el servicio | La aplicación ajusta inmediatamente la moneda local del país y permite elegir entre esa moneda o USD. | 
 | Servicio, especie, cantidad de mascotas, tamaño, zona, fecha de inicio/fin y presupuesto máximo | Lista de cuidadores ficticios que cumplen requisitos obligatorios, con precio estimado, disponibilidad y motivos del orden | John busca una visita a domicilio en San José para un perro mediano el 15/11/2026 con presupuesto de $40; Karla aparece si ofrece ese servicio, está disponible y su precio total no supera el presupuesto. |
+| El dueño de la mascota selecciona en la barra de búsqueda la(s) fecha(s), la(s) mascota(s), zona y el tipo de servicio que necesita | La aplicación despliega las opciones de cuidadores/proveedores disponibles para dichas fechas del catálogo existente en caso de haber disponibilidad, de lo contrario ofrece las fechas más cercanas con los proveedores que más se adapten al servicio solicitado | 
 | Texto opcional: «Necesito alguien para mi perro grande este sábado por la tarde» | Gemini propone campos estructurados para revisión; la persona confirma fechas y condiciones antes de buscar | Si falta hora o ubicación, el formulario solicita esos datos; no se inventan. |
+| Texto opcional: «Mi gato ha estado vomitando los últimos dos días, necesito llevarlo a revisión» | Gemini categoriza el problema descrito y lo asocia con algún proveedor que ofrezca servicios relacionados al mismo (en este caso algún especialista en gatos o un doctor especializado en problemas gástricos de mascotas) o en su defecto un proveedor de salud general de mascotas. | 
 | Selección de cuidador, mascota, servicio y horario | Solicitud simulada con identificador y estado `pendiente` | El dueño ve «Solicitud enviada (simulación)»; el cuidador puede aceptarla o rechazarla en la demo. |
 
 **Datos mínimos del cuidador:** identificador, nombre ficticio, zona general (no dirección), servicios, especies y tamaños aceptados, experiencia declarada, disponibilidad de demostración, precio y unidad (hora/visita/jornada/noche), capacidad y restricciones.  
 **Datos mínimos de la mascota:** nombre ficticio, especie, tamaño, necesidades de cuidado no médicas y compatibilidad relevante. Evitar historiales clínicos reales.  
-**Precios:** USD por defecto; no convertir divisas. Mostrar desglose según unidad y duración. En la demo, una reserva de una noche cuenta como una unidad nocturna; las reglas detalladas para franjas y días parciales quedan fuera de alcance.
+**Precios:** Moneda local o USD por defecto; convertir al tipo de cambio del día. Mostrar desglose según unidad y duración. En la demo, una reserva de una noche cuenta como una unidad nocturna; las reglas detalladas para franjas y días parciales quedan fuera de alcance.
 
 ## 4. La pieza de IA
 
@@ -56,13 +62,14 @@ explica las coincidencias observables. Si no hay candidatos, dilo claramente.
 ## 5. Flujo del usuario
 
 1. La persona abre YokiPet y ve una advertencia visible: «Prototipo con datos ficticios. No se realizan reservas reales».
-2. Selecciona la vista **Dueño** o **Cuidador**. Puede consultar perfiles de ejemplo y seleccionar una mascota ficticia.
-3. En la vista Dueño, selecciona servicio (PetSitting - visita a domicilio, DayCare - guardería de día u Overnight - hospedaje nocturno), zona, fecha/horas, especie, tamaño y presupuesto. Opcionalmente escribe sus necesidades en lenguaje natural.
-4. Si usa texto libre, la app propone campos que la persona revisa y confirma; la búsqueda nunca se ejecuta con fechas inferidas sin confirmación.
-5. La app valida los datos, aplica filtros y muestra cuidadores compatibles, tarifas estimadas y motivos de coincidencia. Si no hay resultados, explica qué filtros podrían flexibilizarse.
-6. La persona selecciona un cuidador y envía una **solicitud simulada**; se genera un ID y el estado `pendiente`.
-7. En la vista Cuidador se muestra la solicitud; se puede **aceptar** o **rechazar**. El dueño puede ver el nuevo estado en la sesión.
-8. Al reiniciar la sesión, los cambios pueden perderse: se informa explícitamente de esta limitación.
+2. La persona ingresa a su perfil con su correo electrónico y contraseña.
+3. Selecciona la vista **Dueño** o **Cuidador**. Puede consultar perfiles de ejemplo y seleccionar una mascota ficticia.
+4. En la vista Dueño, selecciona servicio (PetSitting - visita a domicilio, DayCare - guardería de día u Overnight - hospedaje nocturno, Servicio Veterinario si necesita consulta veterinaria), zona, fecha/horas, especie, tamaño y presupuesto. Opcionalmente escribe sus necesidades en lenguaje natural.
+5. Si usa texto libre, la app propone campos que la persona revisa y confirma; la búsqueda nunca se ejecuta con fechas inferidas sin confirmación.
+6. La app valida los datos, aplica filtros y muestra cuidadores compatibles, tarifas estimadas y motivos de coincidencia. Si no hay resultados, explica qué filtros podrían flexibilizarse.
+7. La persona selecciona un cuidador y envía una **solicitud simulada**; se genera un ID y el estado `pendiente`.
+8. En la vista Cuidador se muestra la solicitud; se puede **aceptar** o **rechazar**. El dueño puede ver el nuevo estado en la sesión.
+9. Al reiniciar la sesión, los cambios pueden perderse: se informa explícitamente de esta limitación.
 
 ## 6. Restricciones
 
@@ -86,7 +93,7 @@ explica las coincidencias observables. Si no hay candidatos, dilo claramente.
 | Fecha final anterior a inicial, precio negativo o cantidad cero | Formulario muestra validación y no crea solicitud. |
 | Campo obligatorio vacío | Se solicita completar el campo; no se inventan valores. |
 | Texto libre ambiguo («este fin de semana») | Se solicita confirmar fecha exacta antes de buscar. |
-| Pregunta fuera de tema | El asistente redirige amablemente al cuidado de mascotas y búsqueda de cuidadores. |
+| Pregunta fuera de tema | El asistente redirige amablemente al cuidado de mascotas y búsqueda de cuidadores o servicios veterinarios. |
 | Gemini no configurado, falla o se agota cuota | Filtros, resultados y reservas simuladas siguen funcionando; aviso claro sin mostrar trazas ni secretos. |
 | No hay cuidadores disponibles | Se informa sin inventar opciones y se sugieren cambios razonables en los filtros. |
 | Solicitud enviada y luego aceptada/rechazada | Se actualiza `pendiente` → `aceptada` o `rechazada`; no se permite cambiar solicitudes ya resueltas sin reiniciar la demo. |
